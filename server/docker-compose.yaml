@@ -1,0 +1,23 @@
+version: '3.8'  # Bạn có thể thay đổi phiên bản nếu cần
+
+services:
+  mysql:
+    image: mysql:8.3.0
+    container_name: mysql_blog_nestjs
+    environment:
+      MYSQL_ROOT_PASSWORD: quocsi  # Mật khẩu cho user root
+    ports:
+      - "3306:3306"  # Chuyển tiếp port 3306
+    volumes:
+      - mysql:/var/lib/mysql  # Sử dụng volume để lưu trữ dữ liệu
+
+  redis:
+    image: redis:latest
+    container_name: redis_blog_nestjs
+    ports:
+      - "6379:6379"  # Chuyển tiếp port 6379
+
+volumes:
+  mysql:
+    external: true  # Định nghĩa volume cho MySQL
+
