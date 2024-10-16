@@ -1,18 +1,14 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { Cache } from 'cache-manager';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { tokenPayload } from '../dto/token.dto';
 @Injectable()
 export class JwtRefreshStrategy extends PassportStrategy(
   Strategy,
   'jwt_refresh_token',
 ) {
-  constructor(
-    configService: ConfigService,
-    @Inject(CACHE_MANAGER) private cacheManager: Cache,
-  ) {
+  constructor(configService: ConfigService) {
     const jwtSecretKey = configService.get<string>(
       'JWT_REFRESH_TOKEN_SECRET_KEY',
     );
@@ -21,7 +17,7 @@ export class JwtRefreshStrategy extends PassportStrategy(
       secretOrKey: jwtSecretKey,
     });
   }
-  async validate(payload: any) {
+  async validate(payload: tokenPayload) {
     return { sub: payload.sub, email: payload.email };
   }
 }
