@@ -2,8 +2,8 @@ import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
 import { RegisterUserDTO } from './dto/user.dto';
 import { AuthService } from './auth.service';
 import { User } from '../user/entities/user.entity';
-import { LoginUserDTO } from './dto/user.dto';
 import { JwtRefreshGuard } from './guards/jwt_refresh.guard';
+import { LocalAuthGuard } from './guards/local.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -13,11 +13,13 @@ export class AuthController {
     return this.authService.register(registerUser);
   }
 
+  @UseGuards(LocalAuthGuard)
   @Post('login')
   login(
-    @Body() loginUserDTO: LoginUserDTO,
+    @Request() req,
   ): Promise<{ access_token: string; refresh_token: string }> {
-    return this.authService.login(loginUserDTO);
+    const user = req.user;
+    return this.authService.login({ sub: user.id, email: user.email });
   }
 
   @UseGuards(JwtRefreshGuard)

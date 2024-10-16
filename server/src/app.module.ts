@@ -8,6 +8,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './modules/databases/databases.module';
 import dbConfig from './config/db.config';
+import jwtConfig from './config/jwt.config';
 
 @Module({
   imports: [
@@ -21,7 +22,7 @@ import dbConfig from './config/db.config';
     }),
     ConfigModule.forRoot({
       envFilePath: '.env',
-      load: [dbConfig],
+      load: [dbConfig, jwtConfig],
       isGlobal: true,
     }),
     DatabaseModule,

@@ -10,13 +10,12 @@ import { User } from '../user/entities/user.entity';
 import { Repository } from 'typeorm';
 import { RegisterUserDTO } from './dto/user.dto';
 import * as bcrypt from 'bcrypt';
-import { LoginUserDTO } from './dto/user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { generateRefreshTokenKey } from 'src/utilities/caching-key';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { ConfigService } from '@nestjs/config';
-import { tokenPair } from './dto/token.dto';
+import { tokenPair, tokenPayload } from './dto/token.dto';
 @Injectable()
 export class AuthService {
   constructor(
@@ -33,11 +32,9 @@ export class AuthService {
     });
   }
 
-  async login(
-    loginUserDTO: LoginUserDTO,
-  ): Promise<{ access_token: string; refresh_token: string }> {
+  async validateUser(email: string, password: string): Promise<any> {
     const user = await this.userRepository.findOne({
-      where: { email: loginUserDTO.email },
+      where: { email: email },
     });
     const incorrectInoException = new HttpException(
       'email or password is incorrect',
@@ -49,22 +46,18 @@ export class AuthService {
     }
 
     console.log({ name: process.env.DB_USERNAME });
-    const checkPass = await bcrypt.compare(
-      loginUserDTO.password,
-      user.password,
-    );
+    const checkPass = await bcrypt.compare(password, user.password);
     if (!checkPass) {
       throw incorrectInoException;
     }
+    return user;
+  }
 
-    const tokenPayload = {
-      sub: user.id,
-      email: user.email,
-    };
-    const token = await this.generateJwtToken(tokenPayload);
-    user.refreshToken = token.refresh_token;
-    await this.userRepository.save(user);
-    this.cacheRefreshToken(user.id, token.refresh_token);
+  async login(
+    payload: tokenPayload,
+  ): Promise<{ access_token: string; refresh_token: string }> {
+    const token = await this.generateJwtToken(payload);
+    this.cacheRefreshToken(payload.sub, token.refresh_token);
     return token;
   }
 
@@ -100,7 +93,7 @@ export class AuthService {
       expiresIn: '30d',
     });
     const accessToken = await this.jwtService.signAsync(payload, {
-      secret: this.configService.get<string>('jwt.jwt_access_token_secret_key'),
+      secret: this.configService.get<string>('jwt.access_token_secret_key'),
       expiresIn: '1h',
     });
     return { access_token: accessToken, refresh_token: refreshToken };
