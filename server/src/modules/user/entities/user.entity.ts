@@ -1,3 +1,4 @@
+import { Role } from 'src/enum/role.enum';
 import {
   Entity,
   Column,
@@ -20,11 +21,14 @@ export class User {
   @Column({ name: 'email' })
   email: string;
 
+  @Column({ name: 'avatar_url' })
+  avatarUrl: string;
+
   @Column({ name: 'password' })
   password: string;
 
-  @Column({ name: 'refresh_token', nullable: true })
-  refreshToken: string;
+  @Column({ name: 'role', default: Role.Reader })
+  role: string;
 
   @Column({ default: 1 })
   status: boolean;
