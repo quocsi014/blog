@@ -64,7 +64,7 @@ export class AuthService {
   async refreshToken(req): Promise<tokenPair> {
     const user = req.user;
     const refreshToken = req.get('Authorization')?.replace('Bearer ', '');
-    const tokenCachingKey = generateRefreshTokenKey(user.sub);
+    const tokenCachingKey = generateRefreshTokenKey(user.id);
     const cachingToken = await this.cacheManager.get(tokenCachingKey);
     if (!cachingToken) {
       throw new UnauthorizedException();
@@ -72,7 +72,11 @@ export class AuthService {
     if (cachingToken != refreshToken) {
       throw new UnauthorizedException();
     }
-    const token = await this.generateJwtToken(user);
+    const payload: tokenPayload = {
+      sub: user.id,
+      email: user.email,
+    };
+    const token = await this.generateJwtToken(payload);
     this.cacheRefreshToken(user.sub, token.refresh_token);
     return token;
   }
