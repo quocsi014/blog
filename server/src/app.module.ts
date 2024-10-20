@@ -11,6 +11,9 @@ import dbConfig from './config/db.config';
 import jwtConfig from './config/jwt.config';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtGuard } from './modules/auth/guards/jwt.guard';
+import { MailService } from './modules/mail/mail.service';
+import { MailModule } from './modules/mail/mail.module';
+import mailConfig from './config/mail.config';
 
 @Module({
   imports: [
@@ -24,10 +27,11 @@ import { JwtGuard } from './modules/auth/guards/jwt.guard';
     }),
     ConfigModule.forRoot({
       envFilePath: '.env',
-      load: [dbConfig, jwtConfig],
+      load: [dbConfig, jwtConfig, mailConfig],
       isGlobal: true,
     }),
     DatabaseModule,
+    MailModule,
   ],
   controllers: [AppController],
   providers: [
@@ -36,6 +40,7 @@ import { JwtGuard } from './modules/auth/guards/jwt.guard';
       provide: APP_GUARD,
       useClass: JwtGuard,
     },
+    MailService,
   ],
 })
 export class AppModule {}
