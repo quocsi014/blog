@@ -5,11 +5,13 @@ import { UpdateUserDTO, UserDTO } from '../auth/dto/user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PagingResponse } from 'src/dto/paging.dto';
 import { Role } from 'src/enum/role.enum';
+import { MailService } from 'src/modules/mail/mail.service';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
+    private mailService: MailService,
   ) {}
   async getUser(userId: string): Promise<UserDTO> {
     const user = await this.userRepository.findOneBy({

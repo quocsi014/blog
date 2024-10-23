@@ -16,9 +16,7 @@ export class JwtStrategy extends PassportStrategy(
     configService: ConfigService,
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {
-    const jwtSecretKey = configService.get<string>(
-      'JWT_ACCESS_TOKEN_SECRET_KEY',
-    );
+    const jwtSecretKey = configService.get<string>('jwt.secretKey.accessToken');
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: jwtSecretKey,

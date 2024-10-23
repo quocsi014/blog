@@ -14,6 +14,7 @@ import { JwtGuard } from './modules/auth/guards/jwt.guard';
 import { MailService } from './modules/mail/mail.service';
 import { MailModule } from './modules/mail/mail.module';
 import mailConfig from './config/mail.config';
+import otpConfig from './config/otp.config';
 
 @Module({
   imports: [
@@ -27,7 +28,7 @@ import mailConfig from './config/mail.config';
     }),
     ConfigModule.forRoot({
       envFilePath: '.env',
-      load: [dbConfig, jwtConfig, mailConfig],
+      load: [dbConfig, jwtConfig, mailConfig, otpConfig],
       isGlobal: true,
     }),
     DatabaseModule,

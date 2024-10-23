@@ -12,7 +12,6 @@ export class RegisterUserDTO {
   @IsNotEmpty()
   lastName: string;
 
-  @IsEmail()
   email: string;
 
   @IsNotEmpty()
@@ -56,4 +55,9 @@ export class UserDTO {
   createdAt: Timestamp;
   @Expose({ name: 'updated_at' })
   updatedAt: Timestamp;
+}
+
+export class EmailDTO {
+  @IsEmail()
+  email: string;
 }
