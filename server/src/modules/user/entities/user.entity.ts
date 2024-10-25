@@ -1,11 +1,13 @@
 import { Expose } from 'class-transformer';
 import { Role } from 'src/enum/role.enum';
+import { Post } from 'src/modules/post/entity/post.entity';
 import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
   Timestamp,
   CreateDateColumn,
+  OneToMany,
 } from 'typeorm';
 
 @Entity('users')
@@ -30,6 +32,9 @@ export class User {
 
   @Column({ name: 'password' })
   password: string;
+
+  @OneToMany(() => Post, (post) => post.author)
+  posts: Post[];
 
   @Column({ name: 'role', default: Role.Reader })
   role: Role;
