@@ -13,18 +13,18 @@ export class Post {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ name: 'title' })
+  @Column({ name: 'title', nullable: false })
   title: string;
 
-  @Column({ name: 'thumbnail_url' })
+  @Column({ name: 'thumbnail_url', nullable: true })
   thumbnailUrl: string;
 
-  @Column({ name: 'content' })
+  @Column({ name: 'content', type: 'text', nullable: true })
   content: string;
 
-  @ManyToMany(() => Category, (category) => category.posts)
+  @ManyToMany(() => Category, (category) => category.posts, { lazy: true })
   categories: Category[];
 
-  @ManyToOne(() => User, (user) => user.posts)
+  @ManyToOne(() => User, (user) => user.posts, { lazy: true })
   author: User;
 }

@@ -36,7 +36,7 @@ export class CategoryController {
 
   @Delete(':id')
   @Roles(Role.Admin)
-  async delete(@Param() id: number): Promise<void> {
+  async delete(@Param('id') id: number): Promise<void> {
     await this.categoryService.deleteCategory(id);
   }
 
