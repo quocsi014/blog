@@ -19,7 +19,6 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { PostOwnershipGuard } from './guards/post_ownership.guard';
 import { Public } from 'src/decorators/public.decorator';
 import { PagingResponse } from 'src/dto/paging.dto';
-import { link } from 'fs';
 @Controller('posts')
 export class PostController {
   constructor(private postService: PostService) {}

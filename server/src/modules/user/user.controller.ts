@@ -22,7 +22,7 @@ export class UserController {
   //Me
   @Get('/me')
   getMe(@Request() req): Promise<UserDTO> {
-    const userId = req.user.sub;
+    const userId = req.user.id;
     return this.userService.getUser(userId);
   }
 

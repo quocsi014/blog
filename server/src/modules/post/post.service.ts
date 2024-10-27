@@ -10,6 +10,7 @@ import { PagingResponse } from 'src/dto/paging.dto';
 
 @Injectable()
 export class PostService {
+  private notFoundResource = new NotFoundException('No Posts Found');
   constructor(
     @InjectRepository(Post) private postRepository: Repository<Post>,
     @InjectRepository(Category)
@@ -64,7 +65,7 @@ export class PostService {
     const post = await this.postRepository.findOneBy({ id: id });
 
     if (!post) {
-      throw new NotFoundException('No Posts Found');
+      throw this.notFoundResource;
     }
 
     await this.postRepository.remove(post);
@@ -76,7 +77,16 @@ export class PostService {
       relations: ['author', 'categories'],
     });
     if (!post) {
-      throw new NotFoundException('No Posts Found');
+      throw this.notFoundResource;
+    }
+    return post;
+  }
+
+  async getBriefOne(id: number): Promise<Post> {
+    const post = await this.postRepository.findOneBy({ id: id });
+
+    if (!post) {
+      throw this.notFoundResource;
     }
     return post;
   }

@@ -1,11 +1,17 @@
+import { Expose } from 'class-transformer';
 import { Category } from 'src/modules/category/entity/category.entity';
+import { Comment } from 'src/modules/comment/entity/comment.entity';
 import { User } from 'src/modules/user/entities/user.entity';
 import {
   Column,
+  CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
+  Timestamp,
 } from 'typeorm';
 
 @Entity('posts')
@@ -26,5 +32,13 @@ export class Post {
   categories: Category[];
 
   @ManyToOne(() => User, (user) => user.posts, { lazy: true })
+  @JoinColumn({ name: 'author_id' })
   author: User;
+
+  @OneToMany(() => Comment, (comment) => comment.post, { lazy: true })
+  comments: Comment[];
+
+  @CreateDateColumn({ name: 'created_at' })
+  @Expose({ name: 'created_at' })
+  createdAt: Timestamp;
 }

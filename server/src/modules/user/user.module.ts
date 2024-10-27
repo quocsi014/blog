@@ -9,5 +9,6 @@ import { MailModule } from '../mail/mail.module';
   imports: [TypeOrmModule.forFeature([User]), MailModule],
   providers: [UserService],
   controllers: [UserController],
+  exports: [UserService],
 })
 export class UserModule {}

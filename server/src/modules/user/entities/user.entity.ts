@@ -1,5 +1,6 @@
-import { Expose } from 'class-transformer';
+import { Exclude, Expose } from 'class-transformer';
 import { Role } from 'src/enum/role.enum';
+import { Comment } from 'src/modules/comment/entity/comment.entity';
 import { Post } from 'src/modules/post/entity/post.entity';
 import {
   Entity,
@@ -31,10 +32,14 @@ export class User {
   avatarUrl: string;
 
   @Column({ name: 'password' })
+  @Exclude()
   password: string;
 
   @OneToMany(() => Post, (post) => post.author)
   posts: Post[];
+
+  @OneToMany(() => Comment, (comment) => comment.user, { lazy: true })
+  comments: Comment[];
 
   @Column({ name: 'role', default: Role.Reader })
   role: Role;

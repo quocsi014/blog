@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { UpdateUserDTO, UserDTO } from '../auth/dto/user.dto';
@@ -9,14 +9,20 @@ import { MailService } from 'src/modules/mail/mail.service';
 
 @Injectable()
 export class UserService {
+  private notFoundResource: HttpException = new NotFoundException(
+    'No Users Found',
+  );
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
     private mailService: MailService,
   ) {}
-  async getUser(userId: string): Promise<UserDTO> {
+  async getUser(userId: number): Promise<UserDTO> {
     const user = await this.userRepository.findOneBy({
-      id: parseInt(userId),
+      id: userId,
     });
+    if (!user) {
+      throw this.notFoundResource;
+    }
     delete user.password;
     return user;
   }
@@ -25,7 +31,7 @@ export class UserService {
     const user = await this.userRepository.findOneBy({ id: userId });
 
     if (!user) {
-      throw new Error('User not found');
+      throw this.notFoundResource;
     }
 
     user.firstName = updateData.firstName || user.firstName;

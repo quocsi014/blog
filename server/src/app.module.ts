@@ -15,6 +15,7 @@ import { MailService } from './modules/mail/mail.service';
 import { MailModule } from './modules/mail/mail.module';
 import { PostModule } from './modules/post/post.module';
 import { CategoryModule } from './modules/category/category.module';
+import { CommentModule } from './modules/comment/comment.module';
 import mailConfig from './config/mail.config';
 import otpConfig from './config/otp.config';
 
@@ -37,6 +38,7 @@ import otpConfig from './config/otp.config';
     MailModule,
     PostModule,
     CategoryModule,
+    CommentModule,
   ],
   controllers: [AppController],
   providers: [
