@@ -17,6 +17,13 @@ const createAppRouter = () =>
         return { Component: LoginRoute };
       },
     },
+    {
+      path: paths.app.posts.path,
+      lazy: async () => {
+        const { PostsRoute } = await import('@/app/routes/app/posts');
+        return { Component: PostsRoute };
+      },
+    }
   ]);
 
 export const AppRouter = () => {

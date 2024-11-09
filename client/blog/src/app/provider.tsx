@@ -1,14 +1,18 @@
-import { store } from '@/redux/store';
 import { HelmetProvider } from 'react-helmet-async';
-import { Provider as ReduxProvider } from 'react-redux';
-
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { AuthProvider } from '@/app/auth-provider';
 type AppProviderProps = {
   children: React.ReactNode;
 };
+
+const queryClient = new QueryClient();
+
 export const AppProvider = ({ children }: AppProviderProps) => {
   return (
-    <ReduxProvider store={store}>
-      <HelmetProvider>{children}</HelmetProvider>
-    </ReduxProvider>
+    <AuthProvider>
+      <QueryClientProvider client={queryClient}>
+        <HelmetProvider>{children}</HelmetProvider>
+      </QueryClientProvider>
+    </AuthProvider>
   );
 };

@@ -28,10 +28,6 @@ export const paths = {
     },
   },
   app: {
-    home: {
-      path: '/',
-      getHref: ()=>'/'
-    },
     posts: {
       path: 'posts',
       getHref: ()=>'/posts',

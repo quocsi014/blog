@@ -1,5 +1,7 @@
 export const LandingRoute = ()=>{
   return(
-    <div></div>
+    <div>
+      landing
+    </div>
   )
 }
