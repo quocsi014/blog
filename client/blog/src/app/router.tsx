@@ -18,12 +18,35 @@ const createAppRouter = () =>
       },
     },
     {
+      path: paths.auth.requestOtp.path,
+      lazy: async () => {
+        const { RequestOtpRoute } = await import(
+          '@/app/routes/auth/request-otp'
+        );
+        return { Component: RequestOtpRoute };
+      },
+    },
+    {
+      path: paths.auth.verifyOtp.path,
+      lazy: async () => {
+        const { VerifyOtpRoute } = await import('@/app/routes/auth/verify-otp');
+        return { Component: VerifyOtpRoute };
+      },
+    },
+    {
+      path: paths.auth.register.path,
+      lazy: async () => {
+        const { RegisterRoute } = await import('@/app/routes/auth/register');
+        return { Component: RegisterRoute };
+      },
+    },
+    {
       path: paths.app.posts.path,
       lazy: async () => {
         const { PostsRoute } = await import('@/app/routes/app/posts');
         return { Component: PostsRoute };
       },
-    }
+    },
   ]);
 
 export const AppRouter = () => {
