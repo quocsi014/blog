@@ -3,7 +3,7 @@ import { LoginForm } from "@/features/auth/components/login-form"
 
 export const LoginRoute = () =>{
   return(
-    <AuthLayout title="Login">
+    <AuthLayout title="Login" description="to use some features">
       <LoginForm/>
     </AuthLayout>
   )

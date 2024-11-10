@@ -12,5 +12,11 @@ export const ERR_DATAS = {
         ERR_CODE: 'INCORRECT_LOGIN_DATA_ERR',
       },
     },
+    otp: {
+      invalid_otp: {
+        message: 'Opt is incorrect or expired',
+        ERR_CODE: 'INVALID_OTP_ERR',
+      },
+    },
   },
 };

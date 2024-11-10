@@ -1,19 +1,32 @@
 import { Head } from '@/components/seo/Head';
-import { HeaderAuth } from '@/features/auth/components/header-auth';
-
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 type AuthLayoutProps = {
   children: React.ReactNode;
   title: string;
+  description?: string;
 };
 
-export const AuthLayout = ({ children, title }: AuthLayoutProps) => {
+export const AuthLayout = ({
+  children,
+  title,
+  description,
+}: AuthLayoutProps) => {
   return (
     <div className='h-screen w-screen flex justify-center bg-gray-100'>
       <Head title={title} />
-      <div className='mt-10 py-10 px-8 w-[450px]  shadow-gray-400 drop-shadow-lg bg-white h-fit rounded-2xl'>
-        <HeaderAuth title={title} />
-        {children}
-      </div>
+      <Card className='h-fit mt-20 w-[400px]'>
+        <CardHeader>
+          <CardTitle>{title}</CardTitle>
+          <CardDescription>{description}</CardDescription>
+        </CardHeader>
+        <CardContent>{children}</CardContent>
+      </Card>
     </div>
   );
 };

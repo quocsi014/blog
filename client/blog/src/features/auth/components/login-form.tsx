@@ -21,6 +21,7 @@ import { Spinner } from '@/components/spiner';
 import Cookies from 'js-cookie';
 import { TokenPair } from '@/types/auth';
 import { useAuth } from '@/hooks/useAuth';
+import { useQueryString } from '@/hooks/useQueryString';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'this field must be an email' }),
@@ -40,13 +41,14 @@ export const LoginForm = () => {
 
   const {setAccessToken} = useAuth();
   const navigate = useNavigate()
+  const queryStrings = useQueryString()
 
   const { mutate, isPending } = useMutation({
     mutationFn: login,
     onSuccess: (data: TokenPair) => {
       setAccessToken(data.access_token)
       Cookies.set('refresh_token', data.refresh_token, { expires: 30 });
-      navigate(paths.app.posts.getHref())
+      navigate(queryStrings.redirectTo || paths.app.posts.getHref())
     },
     onError: (error: ErrorData) => {
       switch (error.ERR_CODE) {
@@ -110,7 +112,7 @@ export const LoginForm = () => {
             />
             <div className='w-full flex justify-center text-gray-500'>
               <span>
-                You have an account?{' '}
+                You don't have an account?{' '}
                 <Link
                   className='underline font-semibold'
                   to={paths.auth.requestOtp.getHref(
