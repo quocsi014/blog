@@ -1,9 +1,9 @@
 import {
   ConflictException,
-  HttpException,
   HttpStatus,
   Inject,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -23,6 +23,8 @@ import { tokenPair, tokenPayload } from './dto/token.dto';
 import { MailService } from '../mail/mail.service';
 import { TooManyRequestsException } from 'src/exceptions/too-many-requests.exception';
 import { OtpDto } from './dto/otp.dto';
+import { CustomizedHttpException } from 'src/exceptions/http-exception.exception';
+import { ERR_DATAS } from 'src/exceptions/error-code';
 @Injectable()
 export class AuthService {
   constructor(
@@ -33,10 +35,11 @@ export class AuthService {
     private readonly mailService: MailService,
   ) {}
   async register(registerUserDto: RegisterUserDTO): Promise<User> {
-    const user = this.userRepository.findOneBy({
+    const user = await this.userRepository.findOneBy({
       email: registerUserDto.email,
     });
     if (user) {
+      console.log(user);
       throw new ConflictException();
     }
     const hashedPassword = await this.hashPassword(registerUserDto.password);
@@ -46,15 +49,19 @@ export class AuthService {
     });
   }
 
-  async requestOtp(email: string): Promise<null> {
-    const user = await this.userRepository.findOne({
-      where: {
-        email: email,
-      },
+  async changePassword(email: string, newPassword: string) {
+    const user = await this.userRepository.findOneBy({
+      email: email,
     });
-    if (user) {
-      throw new ConflictException('Email is exist');
+    if (!user) {
+      throw new NotFoundException();
     }
+    const hashedPassword = await this.hashPassword(newPassword);
+    user.password = hashedPassword;
+    return await this.userRepository.save(user);
+  }
+
+  async requestOtp(email: string): Promise<null> {
     const cachingKey = generateOtpKey(email);
     const preOtp = await this.cacheManager.get(cachingKey);
     if (preOtp) {
@@ -71,7 +78,10 @@ export class AuthService {
     const cachingKey = generateOtpKey(otpDto.email);
     const cachingOtp = await this.cacheManager.get<number>(cachingKey);
 
-    const exception = new UnauthorizedException('Otp is incorrect or expired');
+    const exception = new CustomizedHttpException(
+      ERR_DATAS.auth.otp.invalid_otp,
+      HttpStatus.UNAUTHORIZED,
+    );
 
     if (!cachingOtp) {
       throw exception;
@@ -100,8 +110,8 @@ export class AuthService {
     const user = await this.userRepository.findOne({
       where: { email: email },
     });
-    const incorrectInoException = new HttpException(
-      'email or password is incorrect',
+    const incorrectInoException = new CustomizedHttpException(
+      ERR_DATAS.auth.login.incorrect_data,
       HttpStatus.UNAUTHORIZED,
     );
 

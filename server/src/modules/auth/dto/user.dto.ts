@@ -61,3 +61,7 @@ export class EmailDTO {
   @IsEmail()
   email: string;
 }
+export class NewPasswordDTO {
+  @IsNotEmpty()
+  password: string;
+}

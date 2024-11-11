@@ -1,5 +1,5 @@
 import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
-import { EmailDTO, RegisterUserDTO } from './dto/user.dto';
+import { EmailDTO, NewPasswordDTO, RegisterUserDTO } from './dto/user.dto';
 import { AuthService } from './auth.service';
 import { User } from '../user/entities/user.entity';
 import { JwtRefreshGuard } from './guards/jwt_refresh.guard';
@@ -21,6 +21,13 @@ export class AuthController {
   ): Promise<User> {
     registerUser.email = req.user.email;
     return this.authService.register(registerUser);
+  }
+
+  @Post('reset_password')
+  @Public()
+  @UseGuards(JwtOtpGuard)
+  forgotPassword(@Body() data: NewPasswordDTO, @Request() req) {
+    return this.authService.changePassword(req.user.email, data.password);
   }
 
   @Post('request_otp')
