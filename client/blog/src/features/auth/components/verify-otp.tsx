@@ -13,7 +13,7 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from '@/components/ui/input-otp';
-import { ERR_DATAS, ErrorData } from '@/config/error-data';
+import { ERR_DATAS, ErrorData } from '@/enums/error-data';
 import { requestOtp } from '@/features/auth/apis/request-otp';
 import { verifyOtp } from '@/features/auth/apis/verify-otp';
 import { useQueryString } from '@/hooks/useQueryString';

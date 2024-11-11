@@ -16,7 +16,7 @@ import google_logo from '@/asset/images/google_logo.png';
 import { paths } from '@/config/paths';
 import { useMutation } from '@tanstack/react-query';
 import { login } from '@/features/auth/apis';
-import { ERR_DATAS, ErrorData } from '@/config/error-data';
+import { ERR_DATAS, ErrorData } from '@/enums/error-data';
 import { Spinner } from '@/components/spiner';
 import Cookies from 'js-cookie';
 import { TokenPair } from '@/types/auth';
@@ -94,14 +94,14 @@ export const LoginForm = () => {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input placeholder='your password' {...field} />
+                    <Input type='password' placeholder='your password' {...field} />
                   </FormControl>
                   <FormMessage className='font-normal' />
                   <div className='text-gray-500'>
                     <Link
                       className='underline font-semibold'
                       to={paths.auth.requestOtp.getHref(
-                        paths.auth.forgotPassword.getHref(),
+                        paths.auth.reset.getHref(),
                       )}
                     >
                       forgot password?

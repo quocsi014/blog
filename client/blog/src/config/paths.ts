@@ -22,9 +22,9 @@ export const paths = {
       path:'/auth/otp/verify',
       getHref: (redirectTo: string, email: string) => `/auth/otp/verify?email=${email}&redirectTo=${redirectTo}?email=${email}`,
     },
-    forgotPassword: {
-      path: 'auth/forgot',
-      getHref: ()=>'/auth/forgot',
+    reset: {
+      path: 'auth/reset',
+      getHref: ()=>'/auth/reset',
     },
   },
   app: {

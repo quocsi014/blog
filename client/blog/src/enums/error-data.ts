@@ -18,5 +18,11 @@ export const ERR_DATAS = {
         ERR_CODE: 'INVALID_OTP_ERR',
       },
     },
+    register: {
+      email_verification_invalid: {
+        message: 'you have not verified email or the verification is expired',
+        ERR_CODE: 'EMAIL_VERIFICATION_INVALID_ERR',
+      },
+    },
   },
 };

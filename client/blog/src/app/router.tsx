@@ -41,10 +41,26 @@ const createAppRouter = () =>
       },
     },
     {
+      path: paths.auth.reset.path,
+      lazy: async () => {
+        const { ResetPasswordRoute } = await import(
+          '@/app/routes/auth/reset-password'
+        );
+        return { Component: ResetPasswordRoute };
+      },
+    },
+    {
       path: paths.app.posts.path,
       lazy: async () => {
         const { PostsRoute } = await import('@/app/routes/app/posts');
         return { Component: PostsRoute };
+      },
+    },
+    {
+      path: paths.app.writters.path,
+      lazy: async () => {
+        const { WrittersRoute } = await import('@/app/routes/app/writters');
+        return { Component: WrittersRoute };
       },
     },
   ]);

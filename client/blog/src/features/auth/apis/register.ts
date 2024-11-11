@@ -2,7 +2,6 @@ import { axiosInstance } from '@/lib/axios';
 import Cookies from 'js-cookie';
 
 interface registerData {
-  email: string;
   first_name: string;
   last_name: string;
   password: string;
