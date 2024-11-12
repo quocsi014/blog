@@ -14,58 +14,45 @@ import { Link, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import google_logo from '@/asset/images/google_logo.png';
 import { paths } from '@/config/paths';
-import { useMutation } from '@tanstack/react-query';
-import { login } from '@/features/auth/apis';
+import { loginFormSchema, useLogin } from '@/features/auth/apis';
 import { ERR_DATAS, ErrorData } from '@/enums/error-data';
 import { Spinner } from '@/components/spiner';
-import Cookies from 'js-cookie';
-import { TokenPair } from '@/types/auth';
-import { useAuth } from '@/hooks/useAuth';
 import { useQueryString } from '@/hooks/useQueryString';
 
-const formSchema = z.object({
-  email: z.string().email({ message: 'this field must be an email' }),
-  password: z.string().min(1, {
-    message: 'this field is required',
-  }),
-});
-
 export const LoginForm = () => {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof loginFormSchema>>({
+    resolver: zodResolver(loginFormSchema),
     defaultValues: {
       email: '',
       password: '',
     },
   });
 
-  const {setAccessToken} = useAuth();
-  const navigate = useNavigate()
-  const queryStrings = useQueryString()
+  const navigate = useNavigate();
+  const queryStrings = useQueryString();
 
-  const { mutate, isPending } = useMutation({
-    mutationFn: login,
-    onSuccess: (data: TokenPair) => {
-      setAccessToken(data.access_token)
-      Cookies.set('refresh_token', data.refresh_token, { expires: 30 });
-      navigate(queryStrings.redirectTo || paths.app.posts.getHref())
-    },
-    onError: (error: ErrorData) => {
-      switch (error.ERR_CODE) {
-        case ERR_DATAS.auth.login.incorrect_data.ERR_CODE:
-          form.setError('email', {
-            type: 'munual',
-            message: ERR_DATAS.auth.login.incorrect_data.message,
-          });
-          form.setError('password', {
-            type: 'munual',
-            message: ERR_DATAS.auth.login.incorrect_data.message,
-          });
-      }
+  const { mutate, isPending } = useLogin({
+    mutationConfig: {
+      onSuccess: () => {
+        navigate(queryStrings.redirectTo || paths.app.posts.getHref());
+      },
+      onError: (error: ErrorData) => {
+        switch (error.ERR_CODE) {
+          case ERR_DATAS.auth.login.incorrect_data.ERR_CODE:
+            form.setError('email', {
+              type: 'munual',
+              message: ERR_DATAS.auth.login.incorrect_data.message,
+            });
+            form.setError('password', {
+              type: 'munual',
+              message: ERR_DATAS.auth.login.incorrect_data.message,
+            });
+        }
+      },
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  function onSubmit(values: z.infer<typeof loginFormSchema>) {
     mutate(values);
   }
 
@@ -94,7 +81,11 @@ export const LoginForm = () => {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input type='password' placeholder='your password' {...field} />
+                    <Input
+                      type='password'
+                      placeholder='your password'
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage className='font-normal' />
                   <div className='text-gray-500'>
