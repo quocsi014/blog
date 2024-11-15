@@ -2,7 +2,7 @@ import { Spinner } from '@/components/spiner';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { ErrorData } from '@/config/error-data';
+import { ErrorData } from '@/enums/error-data';
 import { paths } from '@/config/paths';
 import { requestOtp } from '@/features/auth/apis/request-otp';
 import { useQueryString } from '@/hooks/useQueryString';

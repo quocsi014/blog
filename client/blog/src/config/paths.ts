@@ -1,5 +1,5 @@
 export const paths = {
-  home: {
+  root: {
     path: '/',
     getHref: () => '/',
   },
@@ -19,47 +19,50 @@ export const paths = {
       getHref: (target: string) => `/auth/otp/request?target=${target}`,
     },
     verifyOtp: {
-      path:'/auth/otp/verify',
-      getHref: (redirectTo: string, email: string) => `/auth/otp/verify?email=${email}&redirectTo=${redirectTo}?email=${email}`,
+      path: '/auth/otp/verify',
+      getHref: (redirectTo: string, email: string) =>
+        `/auth/otp/verify?email=${email}&redirectTo=${redirectTo}?email=${email}`,
     },
     reset: {
       path: 'auth/reset',
-      getHref: ()=>'/auth/reset',
+      getHref: () => '/auth/reset',
     },
   },
   app: {
-    posts: {
-      path: 'posts',
-      getHref: ()=>'/posts',
+    home: {
+      path: 'home',
+      getHref: () => '/home',
     },
     post: {
       path: 'posts/:postId',
-      getHref: (id: number)=>`/posts/${id}`,
+      getHref: (id: number) => `/posts/${id}`,
     },
     writters: {
       path: 'writters',
-      getHref: ()=> '/writters'
+      getHref: () => '/writters',
     },
     writter: {
       path: 'writters/writterId',
-      getHref: (id: number)=>`/writters/${id}`,
+      getHref: (id: number) => `/writters/${id}`,
     },
     admin: {
+      path: 'admin',
+      getHref: () => 'admin',
       dashboard: {
-        path: 'admin',
-        getHref: ()=> '/admin',
+        path: 'admin/dashboard',
+        getHref: () => '/admin/dashboard',
       },
       users: {
         path: 'users',
-        getHref: ()=>'/admin/users'
+        getHref: () => '/admin/users',
       },
       user: {
         path: 'users/:userId',
-        getHref: (id: number)=>`/admin/users/${id}`,
+        getHref: (id: number) => `/admin/users/${id}`,
       },
       posts: {
         path: 'posts',
-        getHref: ()=>'/admin/posts',
+        getHref: () => '/admin/posts',
       },
       post: {
         path: 'posts/:postId',
@@ -67,13 +70,20 @@ export const paths = {
       },
       stat: {
         path: 'stat',
-        getHref: ()=> '/admin/stat' 
+        getHref: () => '/admin/stat',
       },
       category: {
         path: 'categories',
-        getHref: ()=>'/admin/categories',
+        getHref: () => '/admin/categories',
+      },
+      comments: {
+        path: 'comments',
+        getHref: () => '/admin/comments',
       },
     },
   },
-  
+  no_permisstion: {
+    path: 'no-permisstion',
+    getHref: () => '/no-permisstion',
+  },
 };

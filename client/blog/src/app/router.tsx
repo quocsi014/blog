@@ -1,14 +1,30 @@
+import { AdminLayout } from '@/components/layout/admin-layout';
+import { AppLayout } from '@/components/layout/app-layout';
 import { paths } from '@/config/paths';
+import { useRefresh } from '@/features/auth/apis/refresh';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 const createAppRouter = () =>
   createBrowserRouter([
     {
-      path: paths.home.path,
-      lazy: async () => {
-        const { LandingRoute } = await import('@/app/routes/landing');
-        return { Component: LandingRoute };
-      },
+      path: paths.root.path,
+      element: <AppLayout/>,
+      children: [
+        {
+          path: paths.app.home.path,
+          lazy: async () => {
+            const { PostsRoute } = await import('@/app/routes/app/home');
+            return { Component: PostsRoute };
+          },
+        },
+        {
+          path: paths.app.writters.path,
+          lazy: async () => {
+            const { WrittersRoute } = await import('@/app/routes/app/writters');
+            return { Component: WrittersRoute };
+          },
+        },
+      ],
     },
     {
       path: paths.auth.login.path,
@@ -50,22 +66,33 @@ const createAppRouter = () =>
       },
     },
     {
-      path: paths.app.posts.path,
-      lazy: async () => {
-        const { PostsRoute } = await import('@/app/routes/app/posts');
-        return { Component: PostsRoute };
-      },
-    },
-    {
-      path: paths.app.writters.path,
-      lazy: async () => {
-        const { WrittersRoute } = await import('@/app/routes/app/writters');
-        return { Component: WrittersRoute };
-      },
+      path: paths.app.admin.path,
+      element: <AdminLayout />,
+      children: [
+        {
+          path: paths.app.admin.posts.path,
+          lazy: async () => {
+            const { AdminPostRoute } = await import(
+              '@/app/routes/app/admin/posts'
+            );
+            return { Component: AdminPostRoute };
+          },
+        },
+        {
+          path: paths.app.admin.category.path,
+          lazy: async () => {
+            const { AdminCategoryRoute } = await import(
+              '@/app/routes/app/admin/category'
+            );
+            return { Component: AdminCategoryRoute };
+          },
+        },
+      ],
     },
   ]);
 
 export const AppRouter = () => {
+  useRefresh();
   const router = createAppRouter();
   return <RouterProvider router={router} />;
 };

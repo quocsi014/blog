@@ -13,6 +13,11 @@ export const axiosInstance = Axios.create({
   baseURL: import.meta.env.VITE_API_URL
 });
 
+export const getBearerAuthConfig = (token: string | null)=>{
+  const config = { headers: { Authorization: `Bearer ${token}` } };
+  return config
+}
+
 axiosInstance.interceptors.request.use(authRequestInterceptor);
 axiosInstance.interceptors.response.use(
   (response) => {

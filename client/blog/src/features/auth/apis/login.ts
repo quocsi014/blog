@@ -1,8 +1,10 @@
-import { useAuth } from '@/hooks/useAuth';
+import { getMe } from '@/features/auth/apis/get-me';
 import { axiosInstance } from '@/lib/axios';
 import { MutationConfig } from '@/lib/react-query';
+import { useAppDispatch } from '@/redux/hooks';
+import { setAccessToken, setUser } from '@/redux/slices/user-slice';
 import { TokenPair } from '@/types/auth';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import Cookies from 'js-cookie';
 import { z } from 'zod';
 
@@ -24,14 +26,20 @@ export type UseLoginOptions = {
 };
 
 export const useLogin = ({ mutationConfig }: UseLoginOptions) => {
-  const { setAccessToken } = useAuth();
-  const {onSuccess, ...restConfig} = mutationConfig || {}
+  const { onSuccess, ...restConfig } = mutationConfig || {};
+  const query = useQueryClient();
+  const dispatch = useAppDispatch();
   return useMutation({
     mutationFn: login,
-    onSuccess: (...args) => {
-      setAccessToken(args[0].access_token);
+    onSuccess: async (...args) => {
+      dispatch(setAccessToken(args[0].access_token));
       Cookies.set('refresh_token', args[0].refresh_token, { expires: 30 });
-      onSuccess?.(...args)
+      const user = await query.fetchQuery({
+        queryKey: ['me'],
+        queryFn: () => getMe(args[0].access_token),
+      });
+      dispatch(setUser(user));
+      onSuccess?.(...args);
     },
     ...restConfig,
   });

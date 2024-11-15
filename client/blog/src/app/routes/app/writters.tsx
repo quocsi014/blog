@@ -1,10 +1,10 @@
-import { AppLayout } from "@/components/layout/app-layout"
+import { ContentLayout } from "@/components/layout/content-layout"
 import { WritterList } from "@/features/writter/wirtter-list"
 
 export const WrittersRoute = ()=>{
   return(
-    <AppLayout title="TechBlog">
+    <ContentLayout title="Author">
       <WritterList/>
-    </AppLayout>
+    </ContentLayout>
   )
 }

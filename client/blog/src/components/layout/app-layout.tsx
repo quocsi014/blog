@@ -1,45 +1,33 @@
-import { Head } from '@/components/seo/Head';
+import { Container } from '@/components/container';
+import { BaseLayout } from '@/components/layout/base-layout';
 import { paths } from '@/config/paths';
-import { Link, NavLink } from 'react-router-dom';
-import logo from '@/asset/images/logo.png';
-type AuthLayoutProps = {
-  children: React.ReactNode;
-  title: string;
-};
+import { NavLink, Outlet } from 'react-router-dom';
+import { AppSearchModal } from '@/features/app-search/components/AppSearchModal';
 
-export const AppLayout = ({ children, title }: AuthLayoutProps) => {
+export const AppLayout = () => {
+  const className = ({ isActive }: { isActive: boolean }) => {
+    return `pb-2 pt-4 mr-4 block border-b-4 ${isActive ? 'border-blue-500 text-gray-700' : 'border-transparent text-gray-600 hover:text-black'}`;
+  };
+
   return (
-    <div className='h-screen w-screen px-80 flex flex-col bg-gray-100'>
-      <Head title={title} />
-      <div className='w-full px-10 py-4 flex items-center justify-between bg-white font-semibold'>
-        <div className='flex items-center'>
-          <Link to={paths.home.getHref()}>
-            <img src={logo} className='size-16 mr-2' alt='' />
-          </Link>
-          <NavLink
-            className={({ isActive }) =>
-              isActive ? 'text-black mr-4' : 'text-gray-400 mr-4'
-            }
-            to={paths.app.posts.getHref()}
-          >
-            Posts
+    <BaseLayout>
+      <Container className='flex items-center justify-between font-bold text-xl bg-white'>
+        <div className='flex font'>
+          <NavLink className={className} to={paths.app.home.getHref()}>
+            Home
           </NavLink>
-          <NavLink
-            className={({ isActive }) =>
-              isActive ? 'text-black' : 'text-gray-400'
-            }
-            to={paths.app.writters.getHref()}
-          >
-            Writters
+          <NavLink className={className} to={paths.app.writters.getHref()}>
+            Authors
           </NavLink>
         </div>
-        <div className='flex'>
-          <Link to={paths.auth.login.getHref()}>Login</Link>
-          <div className='border-l-2 mx-2 border-black'></div>
-          <Link to={paths.auth.register.getHref()}>Register</Link>
+        <div>
+          <AppSearchModal />
         </div>
-      </div>
-      <div className='h-full px-10'>{children}</div>
-    </div>
+      </Container>
+
+      <Container className='bg-gray-50 h-full'>
+          <Outlet />
+        </Container>
+    </BaseLayout>
   );
 };
