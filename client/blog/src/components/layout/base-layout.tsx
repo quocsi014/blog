@@ -9,7 +9,7 @@ import {
   accessTokenSelector,
   userSelector,
 } from '@/redux/selector/user-selector';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar } from '@/components/avatar';
 type AuthLayoutProps = {
   children: React.ReactNode;
 };
@@ -29,12 +29,7 @@ export const BaseLayout = ({ children }: AuthLayoutProps) => {
         <div className='flex items-center'>
           {user ? (
             <Fragment>
-              <Avatar>
-                <AvatarImage
-                  src={user.avatar_url}
-                />
-                <AvatarFallback>{user.first_name[0]+user.last_name[0]}</AvatarFallback>
-              </Avatar>
+              <Avatar avatarUrl={user.avatar_url} firstName={user.first_name} lastName={user.last_name}/>
               <div className='border-l-2 mx-4 border-black self-stretch'></div>
               <span
                 className='cursor-pointer'
@@ -48,7 +43,7 @@ export const BaseLayout = ({ children }: AuthLayoutProps) => {
           ) : (
             <Fragment>
               <Link to={paths.auth.login.getHref()}>Login</Link>
-              <div className='border-l-2 mx-4 border-black'></div>
+              <div className='border-l-2 mx-4 border-black self-stretch'></div>
               <Link to={paths.auth.register.getHref()}>Register</Link>
             </Fragment>
           )}
