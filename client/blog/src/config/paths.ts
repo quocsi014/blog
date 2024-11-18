@@ -47,9 +47,9 @@ export const paths = {
     },
     admin: {
       path: 'admin',
-      getHref: () => 'admin',
+      getHref: () => '/admin',
       dashboard: {
-        path: 'admin/dashboard',
+        path: 'dashboard',
         getHref: () => '/admin/dashboard',
       },
       users: {

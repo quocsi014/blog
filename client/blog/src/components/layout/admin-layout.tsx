@@ -1,5 +1,5 @@
 import { paths } from '@/config/paths';
-import { Link, NavLink, Outlet } from 'react-router-dom';
+import { Link, NavLink, Outlet} from 'react-router-dom';
 import logo from '@/asset/images/logo.png';
 import { useSelector } from 'react-redux';
 import { userSelector } from '@/redux/selector/user-selector';
@@ -19,7 +19,6 @@ export const AdminLayout = () => {
           </Link>
         </div>
         <div className='flex flex-col py-10 font-bold px-4 w-64'>
-
           {user?.role == 'ADMIN' || user?.role == 'WRITTER' ? (
             <>
               <NavLink

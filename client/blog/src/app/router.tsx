@@ -2,13 +2,16 @@ import { AdminLayout } from '@/components/layout/admin-layout';
 import { AppLayout } from '@/components/layout/app-layout';
 import { paths } from '@/config/paths';
 import { useRefresh } from '@/features/auth/apis/refresh';
+import { AuthGuard } from '@/guard/AuthGuard';
+import { isFetchingSelector } from '@/redux/selector/user-selector';
+import { useSelector } from 'react-redux';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 const createAppRouter = () =>
   createBrowserRouter([
     {
       path: paths.root.path,
-      element: <AppLayout/>,
+      element: <AppLayout />,
       children: [
         {
           path: paths.app.home.path,
@@ -67,9 +70,23 @@ const createAppRouter = () =>
     },
     {
       path: paths.app.admin.path,
-      element: <AdminLayout />,
+      element: (
+        <AuthGuard>
+          <AdminLayout />
+        </AuthGuard>
+      ),
       children: [
         {
+          path: paths.app.admin.dashboard.path,
+          lazy: async () => {
+            const { AdminDashboardRoute } = await import(
+              '@/app/routes/app/admin/dashboard'
+            );
+            return { Component: AdminDashboardRoute };
+          },
+        },
+        {
+          index: true,
           path: paths.app.admin.posts.path,
           lazy: async () => {
             const { AdminPostRoute } = await import(
@@ -87,12 +104,34 @@ const createAppRouter = () =>
             return { Component: AdminCategoryRoute };
           },
         },
+        {
+          path: paths.app.admin.comments.path,
+          lazy: async () => {
+            const { AdminCommentRoute } = await import(
+              '@/app/routes/app/admin/comment'
+            );
+            return { Component: AdminCommentRoute };
+          },
+        },
+
+        {
+          path: paths.app.admin.users.path,
+          lazy: async () => {
+            const { AdminUserRoute } = await import(
+              '@/app/routes/app/admin/users'
+            );
+            return { Component: AdminUserRoute };
+          },
+        },
       ],
     },
   ]);
 
 export const AppRouter = () => {
-  useRefresh();
   const router = createAppRouter();
-  return <RouterProvider router={router} />;
+  useRefresh();
+  const isFetching = useSelector(isFetchingSelector);
+  return (
+    <>{!isFetching ? <RouterProvider router={router} /> : <div>loading</div>}</>
+  );
 };

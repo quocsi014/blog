@@ -34,7 +34,7 @@ export const LoginForm = () => {
   const { mutate, isPending } = useLogin({
     mutationConfig: {
       onSuccess: () => {
-        navigate(queryStrings.redirectTo || paths.app.posts.getHref());
+        navigate(queryStrings.redirectTo || paths.app.home.getHref());
       },
       onError: (error: ErrorData) => {
         switch (error.ERR_CODE) {

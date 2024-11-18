@@ -6,6 +6,6 @@ export interface User{
 	avatar_url: string,
 	role: string,
 	status: true,
-	created_at: Date,
-	updated_at: Date,
+	created_at: string,
+	updated_at: string,
 }
