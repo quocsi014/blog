@@ -113,7 +113,7 @@ export function Pagination({ currentPage, totalPage, className }: PaginationProp
         )}
         {currentPage < totalPage - 3 ? (
           <PaginationItem>
-            <PaginationLink to={`?page=${totalPage}`}>
+            <PaginationLink to={`?page=${totalPage-1}`}>
               {totalPage - 1}
             </PaginationLink>
           </PaginationItem>

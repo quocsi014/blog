@@ -37,8 +37,8 @@ export const useRefresh = () => {
       dispatch(setUser(user));
       dispatch(setIsFetching(false))
     },
-    onError: (error)=>{
-      console.log({error})
+    onError: ()=>{
+      dispatch(setIsFetching(false))
     }
   });
   useEffect(() => {

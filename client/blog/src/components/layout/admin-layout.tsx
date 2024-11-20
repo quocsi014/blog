@@ -65,8 +65,8 @@ export const AdminLayout = () => {
           )}
         </div>
       </div>
-      <div className='w-full'>
-        <div className='flex justify-end w-full px-10 bg-white h-20 items-center'>
+      <div className='w-full h-full flex flex-col'>
+        <div className='flex justify-end w-full shrink-0 px-10 bg-white h-20 items-center'>
           <AccountManagement />
         </div>
         <Outlet />

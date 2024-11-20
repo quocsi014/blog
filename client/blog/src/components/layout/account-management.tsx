@@ -4,14 +4,12 @@ import { Fragment } from 'react/jsx-runtime';
 import { useLogout } from '@/features/auth/apis/logout';
 import { useSelector } from 'react-redux';
 import {
-  accessTokenSelector,
   userSelector,
 } from '@/redux/selector/user-selector';
 import { Avatar } from '@/components/avatar';
 
 export const AccountManagement = () => {
   const user = useSelector(userSelector);
-  const accessToken = useSelector(accessTokenSelector);
   const { mutate } = useLogout({});
   return (
     <div className='flex items-center h-fit'>
@@ -26,7 +24,7 @@ export const AccountManagement = () => {
           <span
             className='cursor-pointer'
             onClick={() => {
-              mutate(accessToken);
+              mutate(undefined);
             }}
           >
             Log out
