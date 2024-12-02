@@ -7,7 +7,7 @@ import {
   Timestamp,
 } from 'typeorm';
 
-@Entity({ name: 'image' })
+@Entity('images')
 export class Image {
   @PrimaryGeneratedColumn()
   id: number;

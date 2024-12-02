@@ -15,6 +15,7 @@ export class CloudinaryService {
     const result = await cloudinary.uploader.upload(file.path, {
       folder: 'blog/avatar',
     });
+    console.log(result.secure_url);
     const image: ImageDTO = {
       url: result.secure_url,
       key: result.public_id,

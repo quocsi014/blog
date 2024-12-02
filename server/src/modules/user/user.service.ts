@@ -12,6 +12,7 @@ import { PagingResponse } from 'src/dto/paging.dto';
 import { Role } from 'src/enum/role.enum';
 import { MailService } from 'src/modules/mail/mail.service';
 import { CloudinaryService } from 'src/modules/cloudinary/cloudinary.service';
+import { Image } from 'src/entity/image.entity';
 
 @Injectable()
 export class UserService {
@@ -20,6 +21,7 @@ export class UserService {
   );
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
+    @InjectRepository(Image) private imageRepository: Repository<Image>,
     private mailService: MailService,
     private readonly cloudinaryService: CloudinaryService,
   ) {}
@@ -43,8 +45,15 @@ export class UserService {
     this.userRepository.save(userDTO);
   }
 
-  async uploadAvatar(file: Express.Multer.File): Promise<void> {
-    await this.cloudinaryService.uploadImage(file);
+  async uploadAvatar(userId: number, file: Express.Multer.File): Promise<void> {
+    const user = await this.userRepository.findOneBy({ id: userId });
+    const avatar = await this.cloudinaryService.uploadImage(file);
+    const createdAvatar: Image = this.imageRepository.create(avatar);
+    // if (user.avatar) {
+    //   this.cloudinaryService.deleteImage(user.avatar.key);
+    // }
+    user.avatar = createdAvatar;
+    await this.userRepository.save(user);
   }
 
   async updateUser(userId: number, updateData: UpdateUserDTO): Promise<void> {
@@ -56,7 +65,6 @@ export class UserService {
 
     user.firstName = updateData.firstName || user.firstName;
     user.lastName = updateData.lastName || user.lastName;
-    user.avatarUrl = updateData.avatarUrl || user.avatarUrl;
     user.role = updateData.role || user.role;
     await this.userRepository.save(user);
   }

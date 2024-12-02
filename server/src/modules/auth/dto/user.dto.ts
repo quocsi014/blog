@@ -1,5 +1,6 @@
 import { Expose } from 'class-transformer';
 import { IsEmail, IsEnum, IsNotEmpty } from 'class-validator';
+import { ImageDTO } from 'src/dto/image.dto';
 import { Role } from 'src/enum/role.enum';
 import { Timestamp } from 'typeorm';
 
@@ -32,9 +33,6 @@ export class UpdateUserDTO {
   @Expose({ name: 'last_name' })
   lastName: string;
 
-  @Expose({ name: 'avatar_url' })
-  avatarUrl: string;
-
   @IsEnum(Role, {
     message: 'Role must be one of the following values: READER, WRITER, ADMIN',
   })
@@ -51,8 +49,8 @@ export class UserDTO {
   firstName: string;
   @IsNotEmpty()
   role: Role;
-  @Expose({ name: 'avatar_url' })
-  avatarUrl: string;
+  @Expose({ name: 'avatar' })
+  avatar: ImageDTO;
   @IsNotEmpty()
   password: string;
   @Expose({ name: 'created_at' })

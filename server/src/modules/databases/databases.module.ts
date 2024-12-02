@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { Image } from 'src/entity/image.entity';
 
 @Module({
   imports: [
@@ -14,7 +15,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         username: configService.get('database.username'),
         password: configService.get('database.password'),
         database: configService.get('database.name'),
-        entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+        entities: [__dirname + '/../**/*.entity{.ts,.js}', Image],
         synchronize: false,
       }),
     }),

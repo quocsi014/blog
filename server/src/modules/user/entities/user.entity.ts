@@ -11,8 +11,8 @@ import {
   CreateDateColumn,
   OneToMany,
   OneToOne,
+  JoinColumn,
 } from 'typeorm';
-
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn()
@@ -29,9 +29,8 @@ export class User {
   @Column({ name: 'email' })
   email: string;
 
-  @Column({ name: 'avatar', nullable: true })
-  @Expose({ name: 'avatar' })
-  @OneToOne(() => Image, { cascade: true, onDelete: 'CASCADE' })
+  @OneToOne(() => Image, { cascade: true, onDelete: 'CASCADE', eager: true })
+  @JoinColumn({ name: 'avatar_id' })
   avatar: Image;
 
   @Column({ name: 'password' })
@@ -41,7 +40,7 @@ export class User {
   @OneToMany(() => Post, (post) => post.author)
   posts: Post[];
 
-  @OneToMany(() => Comment, (comment) => comment.user, { lazy: true })
+  @OneToMany(() => Comment, (comment) => comment.user)
   comments: Comment[];
 
   @Column({ name: 'role', default: Role.Reader })

@@ -53,8 +53,9 @@ export class UserController {
       }),
     )
     file: Express.Multer.File,
+    @Request() req,
   ) {
-    await this.userService.uploadAvatar(file);
+    await this.userService.uploadAvatar(req.user.sub, file);
     unlink(file.path, (error) => {
       if (error) {
         console.error('Error deleting file:', error);
