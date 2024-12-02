@@ -1,4 +1,5 @@
 import { Exclude, Expose } from 'class-transformer';
+import { Image } from 'src/entity/image.entity';
 import { Role } from 'src/enum/role.enum';
 import { Comment } from 'src/modules/comment/entity/comment.entity';
 import { Post } from 'src/modules/post/entity/post.entity';
@@ -9,6 +10,7 @@ import {
   Timestamp,
   CreateDateColumn,
   OneToMany,
+  OneToOne,
 } from 'typeorm';
 
 @Entity('users')
@@ -27,9 +29,10 @@ export class User {
   @Column({ name: 'email' })
   email: string;
 
-  @Column({ name: 'avatar_url', nullable: true })
-  @Expose({ name: 'avatar_url' })
-  avatarUrl: string;
+  @Column({ name: 'avatar', nullable: true })
+  @Expose({ name: 'avatar' })
+  @OneToOne(() => Image, { cascade: true, onDelete: 'CASCADE' })
+  avatar: Image;
 
   @Column({ name: 'password' })
   @Exclude()

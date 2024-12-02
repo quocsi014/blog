@@ -43,19 +43,25 @@ export class UpdateUserDTO {
 
 export class UserDTO {
   id: number;
+  @IsNotEmpty()
   email: string;
   @Expose({ name: 'first_name' })
   lastName: string;
   @Expose({ name: 'last_name' })
   firstName: string;
+  @IsNotEmpty()
   role: Role;
   @Expose({ name: 'avatar_url' })
   avatarUrl: string;
+  @IsNotEmpty()
+  password: string;
   @Expose({ name: 'created_at' })
   createdAt: Timestamp;
   @Expose({ name: 'updated_at' })
   updatedAt: Timestamp;
 }
+
+export type SafeUser = Omit<InstanceType<typeof UserDTO>, 'password'>;
 
 export class EmailDTO {
   @IsEmail()

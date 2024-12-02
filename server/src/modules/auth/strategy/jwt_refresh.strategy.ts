@@ -10,7 +10,7 @@ export class JwtRefreshStrategy extends PassportStrategy(
 ) {
   constructor(configService: ConfigService) {
     const jwtSecretKey = configService.get<string>(
-      'JWT_REFRESH_TOKEN_SECRET_KEY',
+      'jwt.secretKey.refreshToken',
     );
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),

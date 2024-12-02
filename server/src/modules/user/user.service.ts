@@ -1,11 +1,17 @@
-import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  HttpException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
-import { UpdateUserDTO, UserDTO } from '../auth/dto/user.dto';
+import { SafeUser, UpdateUserDTO, UserDTO } from '../auth/dto/user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PagingResponse } from 'src/dto/paging.dto';
 import { Role } from 'src/enum/role.enum';
 import { MailService } from 'src/modules/mail/mail.service';
+import { CloudinaryService } from 'src/modules/cloudinary/cloudinary.service';
 
 @Injectable()
 export class UserService {
@@ -15,16 +21,30 @@ export class UserService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
     private mailService: MailService,
+    private readonly cloudinaryService: CloudinaryService,
   ) {}
-  async getUser(userId: number): Promise<UserDTO> {
+  async getUser(userId: number): Promise<SafeUser> {
     const user = await this.userRepository.findOneBy({
       id: userId,
     });
     if (!user) {
       throw this.notFoundResource;
     }
-    delete user.password;
     return user;
+  }
+
+  async createUser(userDTO: UserDTO) {
+    const user = await this.userRepository.findOneBy({
+      email: userDTO.email,
+    });
+    if (user) {
+      throw new ConflictException();
+    }
+    this.userRepository.save(userDTO);
+  }
+
+  async uploadAvatar(file: Express.Multer.File): Promise<void> {
+    await this.cloudinaryService.uploadImage(file);
   }
 
   async updateUser(userId: number, updateData: UpdateUserDTO): Promise<void> {

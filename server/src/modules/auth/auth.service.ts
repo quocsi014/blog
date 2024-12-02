@@ -135,10 +135,15 @@ export class AuthService {
     return token;
   }
 
+  async logout(userId: string): Promise<void> {
+    const tokenCachingKey = generateRefreshTokenKey(userId);
+    await this.cacheManager.del(tokenCachingKey);
+    return;
+  }
   async refreshToken(req): Promise<tokenPair> {
     const user = req.user;
     const refreshToken = req.get('Authorization')?.replace('Bearer ', '');
-    const tokenCachingKey = generateRefreshTokenKey(user.id);
+    const tokenCachingKey = generateRefreshTokenKey(user.sub);
     const cachingToken = await this.cacheManager.get(tokenCachingKey);
     if (!cachingToken) {
       throw new UnauthorizedException();
@@ -147,7 +152,7 @@ export class AuthService {
       throw new UnauthorizedException();
     }
     const payload: tokenPayload = {
-      sub: user.id,
+      sub: user.sub,
       email: user.email,
     };
     const token = await this.generateJwtToken(payload);
@@ -182,7 +187,6 @@ export class AuthService {
     const accessTokenExp = this.configService.get<string>(
       'jwt.expiration.accessToken',
     );
-    console.log(typeof accessTokenExp);
     const accessToken = await this.jwtService.signAsync(payload, {
       secret: accessTokenSK,
       expiresIn: parseInt(accessTokenExp),

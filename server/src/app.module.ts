@@ -16,8 +16,11 @@ import { MailModule } from './modules/mail/mail.module';
 import { PostModule } from './modules/post/post.module';
 import { CategoryModule } from './modules/category/category.module';
 import { CommentModule } from './modules/comment/comment.module';
+import { CloudinaryService } from './modules/cloudinary/cloudinary.service';
+import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
 import mailConfig from './config/mail.config';
 import otpConfig from './config/otp.config';
+import cloudinaryConfig from './config/cloudinary.config';
 
 @Module({
   imports: [
@@ -31,7 +34,7 @@ import otpConfig from './config/otp.config';
     }),
     ConfigModule.forRoot({
       envFilePath: '.env',
-      load: [dbConfig, jwtConfig, mailConfig, otpConfig],
+      load: [dbConfig, jwtConfig, mailConfig, otpConfig, cloudinaryConfig],
       isGlobal: true,
     }),
     DatabaseModule,
@@ -39,6 +42,7 @@ import otpConfig from './config/otp.config';
     PostModule,
     CategoryModule,
     CommentModule,
+    CloudinaryModule,
   ],
   controllers: [AppController],
   providers: [
@@ -48,6 +52,7 @@ import otpConfig from './config/otp.config';
       useClass: JwtGuard,
     },
     MailService,
+    CloudinaryService,
   ],
 })
 export class AppModule {}

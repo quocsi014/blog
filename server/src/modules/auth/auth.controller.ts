@@ -52,6 +52,12 @@ export class AuthController {
     return this.authService.login({ sub: user.id, email: user.email });
   }
 
+  @Post('logout')
+  logout(@Request() req): Promise<void> {
+    const user = req.user;
+    return this.authService.logout(user.id);
+  }
+
   @UseGuards(JwtRefreshGuard)
   @Public()
   @Post('refresh')
