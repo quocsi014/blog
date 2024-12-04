@@ -8,20 +8,25 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import useUpdateSearchParam from '@/hooks/use-update-query';
-import { useMemo} from 'react';
+import { useMemo, useState } from 'react';
 
 export function SelectRow() {
   const updateSearchParam = useUpdateSearchParam();
+  const [selectedRows, setSelectedRows] = useState<string>(
+    localStorage.getItem('rows') || '10', // Giá trị mặc định là 10
+  );
   const handleChange = useMemo(() => {
     return (value: string) => {
       localStorage.setItem('rows', value);
       updateSearchParam('page');
+      setSelectedRows(value)
       // updateSearchParam('rows', value);
     };
   }, [updateSearchParam]);
 
   return (
     <Select
+      value={selectedRows}
       onValueChange={(value) => {
         handleChange(value);
       }}

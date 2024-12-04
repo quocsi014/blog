@@ -16,7 +16,7 @@ export const AccountManagement = () => {
       {user ? (
         <Fragment>
           <Avatar
-            avatarUrl={user.avatar_url}
+            avatarUrl={user.avatar?.url}
             firstName={user.first_name}
             lastName={user.last_name}
           />
