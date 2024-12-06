@@ -1,5 +1,5 @@
 import { Expose } from 'class-transformer';
-import { IsEmail, IsEnum, IsNotEmpty } from 'class-validator';
+import { IsEmail, IsEnum, IsNotEmpty, IsOptional } from 'class-validator';
 import { ImageDTO } from 'src/dto/image.dto';
 import { Role } from 'src/enum/role.enum';
 import { Timestamp } from 'typeorm';
@@ -33,6 +33,7 @@ export class UpdateUserDTO {
   @Expose({ name: 'last_name' })
   lastName: string;
 
+  @IsOptional()
   @IsEnum(Role, {
     message: 'Role must be one of the following values: READER, WRITER, ADMIN',
   })
