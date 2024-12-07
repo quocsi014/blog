@@ -60,6 +60,18 @@ export class UserDTO {
   updatedAt: Timestamp;
 }
 
+export const SortUserFields = [
+  'id',
+  'email',
+  'role',
+  'firstName',
+  'lastName',
+  'createdAt',
+  'updatedAt',
+];
+
+export const QueryUserFields = ['id', 'email', 'role', 'firstName', 'lastName'];
+
 export type SafeUser = Omit<InstanceType<typeof UserDTO>, 'password'>;
 
 export class EmailDTO {

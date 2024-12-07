@@ -14,7 +14,12 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { SafeUser, UpdateUserDTO, UserDTO } from '../auth/dto/user.dto';
+import {
+  SafeUser,
+  SortUserFields,
+  UpdateUserDTO,
+  UserDTO,
+} from '../auth/dto/user.dto';
 import { UserService } from './user.service';
 import { PagingResponse } from 'src/dto/paging.dto';
 import { Role } from 'src/enum/role.enum';
@@ -74,11 +79,18 @@ export class UserController {
   async getAllUsers(
     @Query('limit') limit: number,
     @Query('page') page: number,
-    @Query('role') role: Role,
+    @Query('query') query: string,
+    @Query('sort_by') sortBy: string,
+    @Query('asc') ascending: boolean,
   ): Promise<PagingResponse<UserDTO>> {
     const res = new PagingResponse<UserDTO>(limit, page);
     res.process();
-    return await this.userService.getAllUser(res, role);
+    res.ascending = ascending;
+    if (SortUserFields.includes(sortBy)) {
+      res.sortBy = sortBy;
+    }
+    res.query = query;
+    return await this.userService.getAllUser(res);
   }
 
   @Roles(Role.Admin)
@@ -92,8 +104,18 @@ export class UserController {
   @Roles(Role.Admin)
   @UseGuards(RolesGuard)
   @Put('/:id')
-  @UseInterceptors(FileInterceptor('file', multerOptions))
   async updateUser(
+    @Param('id') id: number,
+    @Body() user: UpdateUserDTO,
+  ): Promise<void> {
+    await this.userService.updateUser(id, user);
+  }
+
+  @Roles(Role.Admin)
+  @UseGuards(RolesGuard)
+  @Put('/:id/avatar')
+  @UseInterceptors(FileInterceptor('file', multerOptions))
+  async updateUserAvatar(
     @UploadedFile(
       new ParseFilePipe({
         validators: [
@@ -104,22 +126,12 @@ export class UserController {
     )
     file: Express.Multer.File,
     @Param('id') id: number,
-    @Body('user') userData,
   ): Promise<void> {
-    const user = plainToInstance(UpdateUserDTO, JSON.parse(userData), {
-      strategy: 'excludeAll', // Nếu muốn bỏ qua các field không nằm trong DTO
-      excludeExtraneousValues: true, // Chỉ lấy các field được khai báo trong DTO
-      enableImplicitConversion: true, // Tự động chuyển đổi kiểu
-    });
-    console.log(user);
-    await Promise.all([
-      this.userService.uploadAvatar(id, file),
-      this.userService.updateUser(id, user),
-    ]);
-    unlink(file.path, (error) => {
-      if (error) {
-        console.error('Error deleting file:', error);
-      }
-    });
+    await this.userService.uploadAvatar(id, file),
+      unlink(file.path, (error) => {
+        if (error) {
+          console.error('Error deleting file:', error);
+        }
+      });
   }
 }

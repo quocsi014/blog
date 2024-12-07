@@ -4,12 +4,16 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
-import { SafeUser, UpdateUserDTO, UserDTO } from '../auth/dto/user.dto';
+import {
+  SafeUser,
+  SortUserFields,
+  UpdateUserDTO,
+  UserDTO,
+} from '../auth/dto/user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PagingResponse } from 'src/dto/paging.dto';
-import { Role } from 'src/enum/role.enum';
 import { MailService } from 'src/modules/mail/mail.service';
 import { CloudinaryService } from 'src/modules/cloudinary/cloudinary.service';
 import { Image } from 'src/entity/image.entity';
@@ -76,24 +80,30 @@ export class UserService {
 
   async getAllUser(
     pagignRes: PagingResponse<UserDTO>,
-    role: Role,
   ): Promise<PagingResponse<UserDTO>> {
+    const whereCondition: any = pagignRes.query
+      ? SortUserFields.map((field) => ({
+          [field]: Like(`%${pagignRes.query}%`),
+        }))
+      : undefined;
     const count = await this.userRepository.count({
-      where: {
-        role: role,
-      },
+      where: whereCondition,
     });
     const totalPage =
       Math.floor(count / pagignRes.limit) +
       (count % pagignRes.limit > 0 ? 1 : 0);
 
     const offset = (pagignRes.page - 1) * pagignRes.limit;
+    const order: any = {};
+    if (pagignRes.sortBy) {
+      order[pagignRes.sortBy] = pagignRes.ascending ? 'ASC' : 'DESC';
+      console.log(pagignRes.sortBy);
+    }
     const users = await this.userRepository.find({
       skip: offset,
       take: pagignRes.limit,
-      where: {
-        role: role,
-      },
+      where: whereCondition,
+      order: order,
     });
     pagignRes.totalPage = totalPage;
     pagignRes.items = users;

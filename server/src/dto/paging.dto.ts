@@ -17,5 +17,11 @@ export class PagingResponse<T> {
 
   page: number;
 
+  query: string | null | undefined;
+
+  sortBy: string | null | undefined;
+
+  ascending: boolean | null | undefined;
+
   items: T[];
 }
