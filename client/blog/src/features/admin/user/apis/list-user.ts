@@ -6,10 +6,7 @@ import { queryOptions, useQuery } from '@tanstack/react-query';
 export const getUserList = (param: GetListParam) => {
   console.log('get')
   return axiosInstanceJwt.get(
-    `users?page=${param.page}&limit=${param.limit}
-    ${param.sortBy ? `&sortBy=${param.sortBy}` : ''}
-    ${param.asc ? `&asc=${param.asc}` : ''}
-    ${param.query ? `&query=${param.query}` : ''}`,
+    `users?page=${param.page}&limit=${param.limit}${param.sortBy ? `&sort_by=${param.sortBy}` : ''}${param.asc != null ? `&asc=${param.asc}` : ''}${param.query ? `&query=${param.query}` : ''}`,
   );
 };
 
@@ -30,11 +27,13 @@ export const useUsers = ({
   queryConfig,
   page,
   limit,
-  query
+  query,
+  sortBy,
+  asc
 }: UseDiscussionsOptions) => {
   return useQuery({
     placeholderData: (pre) => pre,
-    ...getUsersQueryOptions({ page, limit, query }),
+    ...getUsersQueryOptions({ page, limit, query, sortBy, asc }),
     ...queryConfig,
   });
 };

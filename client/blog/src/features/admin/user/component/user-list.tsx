@@ -25,15 +25,21 @@ import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { useDebounce } from '@/hooks/use-debounce';
 import useUpdateSearchParam from '@/hooks/use-update-query';
+import { SortButton } from '@/components/ui/sort-button';
 export const UserList = () => {
   const [search, setSearch] = useState<string>('');
+  const [sortBy, setSortBy] = useState<string | null>(null);
+  const [asc, setAsc] = useState<boolean | null>(null);
   const searchRef = useRef('');
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const updateSearchParam = useUpdateSearchParam();
   const queryString = useQueryString();
   const { data } = useUsers({
     page: Number.parseInt(queryString['page']) || 1,
     limit: Number.parseInt(localStorage.getItem('rows') || '10'),
     query: searchRef.current,
+    sortBy: sortBy,
+    asc: asc,
   });
   const [userUpdate, setUserUpdate] = useState<User | null>(null);
   useEffect(() => {
@@ -45,30 +51,48 @@ export const UserList = () => {
     }
     const user = data.data.items.find((u: User) => u.id == userUpdate.id);
     setUserUpdate(user);
-  }, [data]);
+  }, [data, userUpdate]);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.ctrlKey && event.key === 'k') {
+        event.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+
   const searchDebounce = useDebounce((search: string) => {
     updateSearchParam('page');
     searchRef.current = search;
   }, 500);
-  const onSearchChange = (event: ChangeEvent<HTMLInputElement>)=>{
-    const newSearch = event.target.value 
-    setSearch(newSearch)
-    searchDebounce(newSearch)
-
-  }
+  const onSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const newSearch = event.target.value;
+    setSearch(newSearch);
+    searchDebounce(newSearch);
+  };
   const onCloseUpdateForm = () => {
     setUserUpdate(null);
   };
+
   return (
     <div className='overflow-hidden'>
       <div className='py-4 flex justify-between'>
         <div className='flex space-x-4'>
           <SelectRow />
           <Input
+            ref={searchInputRef}
             value={search}
-            onChange={(e)=>{onSearchChange(e)}}
+            onChange={(e) => {
+              onSearchChange(e);
+            }}
             className='w-72 focus-visible:ring-transparent border-0'
-            placeholder='Search by name, email and role'
+            placeholder='Search by name, email and role (Ctr + K)'
           ></Input>
         </div>
         {/* <Button className='bg-gray-500 hover:bg-gray-600 text-white text-lg'>
@@ -96,18 +120,48 @@ export const UserList = () => {
               <TableHead className='w-[100px] font-bold text-black'>
                 Avatar
               </TableHead>
-              <TableHead className='w-[200px] font-bold text-black'>
-                First name
+              <TableHead className='w-[200px] space-x-2 font-bold text-black'>
+                <span>First name</span>
+                <SortButton
+                  sortField='firstName'
+                  sortBy={sortBy}
+                  setSortBy={setSortBy}
+                  asc={asc}
+                  setAsc={setAsc}
+                ></SortButton>
               </TableHead>
-              <TableHead className='w-[200px] font-bold text-black'>
-                Last name
+              <TableHead className='w-[200px] space-x-2 font-bold text-black'>
+                <span>Last name</span>
+                <SortButton
+                  sortField='lastName'
+                  sortBy={sortBy}
+                  setSortBy={setSortBy}
+                  asc={asc}
+                  setAsc={setAsc}
+                ></SortButton>
               </TableHead>
-              <TableHead className='font-bold text-black'>Email</TableHead>
+              <TableHead className='space-x-2 font-bold text-black'>
+                <span>Email</span>
+                <SortButton
+                  sortField='email'
+                  sortBy={sortBy}
+                  setSortBy={setSortBy}
+                  asc={asc}
+                  setAsc={setAsc}
+                ></SortButton>
+              </TableHead>
               <TableHead className='w-[150px] font-bold text-black'>
                 Role
               </TableHead>
-              <TableHead className='w-[200px] font-bold text-black'>
-                Create at
+              <TableHead className='w-[200px] space-x-2 font-bold text-black'>
+                <span>Created at</span>
+                <SortButton
+                  sortField='createdAt'
+                  sortBy={sortBy}
+                  setSortBy={setSortBy}
+                  asc={asc}
+                  setAsc={setAsc}
+                ></SortButton>
               </TableHead>
               <TableHead className='w-[200px] font-bold text-black'>
                 Action

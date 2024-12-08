@@ -2,7 +2,7 @@ export type GetListParam = {
   page: number;
   limit: number;
   sortBy?: string | null;
-  asc?: boolean;
+  asc?: boolean | null;
   query?: string;
 };
 
