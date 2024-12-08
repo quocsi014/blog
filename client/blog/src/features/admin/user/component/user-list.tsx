@@ -17,20 +17,68 @@ import { ScrollArea, ScrollAreaViewport } from '@radix-ui/react-scroll-area';
 import { ScrollBar } from '@/components/ui/scroll-area';
 import { CreateUser } from '@/features/admin/user/component/create-user';
 import { Avatar } from '@/components/avatar';
+import { Button } from '@/components/ui/button';
+import { MdRemoveRedEye } from 'react-icons/md';
+import { IoMdTrash } from 'react-icons/io';
+import { UpdateUserForm } from '@/features/admin/user/component/update-user';
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
+import { Input } from '@/components/ui/input';
+import { useDebounce } from '@/hooks/use-debounce';
+import useUpdateSearchParam from '@/hooks/use-update-query';
 export const UserList = () => {
+  const [search, setSearch] = useState<string>('');
+  const searchRef = useRef('');
+  const updateSearchParam = useUpdateSearchParam();
   const queryString = useQueryString();
   const { data } = useUsers({
     page: Number.parseInt(queryString['page']) || 1,
     limit: Number.parseInt(localStorage.getItem('rows') || '10'),
+    query: searchRef.current,
   });
+  const [userUpdate, setUserUpdate] = useState<User | null>(null);
+  useEffect(() => {
+    if (!userUpdate) {
+      return;
+    }
+    if (!data) {
+      return;
+    }
+    const user = data.data.items.find((u: User) => u.id == userUpdate.id);
+    setUserUpdate(user);
+  }, [data]);
+  const searchDebounce = useDebounce((search: string) => {
+    updateSearchParam('page');
+    searchRef.current = search;
+  }, 500);
+  const onSearchChange = (event: ChangeEvent<HTMLInputElement>)=>{
+    const newSearch = event.target.value 
+    setSearch(newSearch)
+    searchDebounce(newSearch)
+
+  }
+  const onCloseUpdateForm = () => {
+    setUserUpdate(null);
+  };
   return (
     <div className='overflow-hidden'>
       <div className='py-4 flex justify-between'>
-        <SelectRow />
+        <div className='flex space-x-4'>
+          <SelectRow />
+          <Input
+            value={search}
+            onChange={(e)=>{onSearchChange(e)}}
+            className='w-72 focus-visible:ring-transparent border-0'
+            placeholder='Search by name, email and role'
+          ></Input>
+        </div>
         {/* <Button className='bg-gray-500 hover:bg-gray-600 text-white text-lg'>
           Create user
         </Button> */}
         <CreateUser></CreateUser>
+        <UpdateUserForm
+          user={userUpdate}
+          onClose={onCloseUpdateForm}
+        ></UpdateUserForm>
       </div>
       <ScrollArea className='h-[600px] rounded-xl overflow-auto'>
         <ScrollAreaViewport>
@@ -61,6 +109,9 @@ export const UserList = () => {
               <TableHead className='w-[200px] font-bold text-black'>
                 Create at
               </TableHead>
+              <TableHead className='w-[200px] font-bold text-black'>
+                Action
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody className='bg-white'>
@@ -74,7 +125,7 @@ export const UserList = () => {
                     <Avatar
                       avatarUrl={user.avatar?.url}
                       lastName={user.last_name}
-                      firstName={user.last_name}
+                      firstName={user.first_name}
                     />
                   </TableCell>
                   <TableCell className='text-md font-medium text-gray-700'>
@@ -92,10 +143,28 @@ export const UserList = () => {
                   <TableCell className='text-md font-medium text-gray-700'>
                     {formatDate(user.created_at)}
                   </TableCell>
+                  <TableCell>
+                    <div className='space-x-1'>
+                      <Button
+                        className='bg-blue-400 hover:bg-blue-500'
+                        onClick={() => {
+                          setUserUpdate(user);
+                        }}
+                      >
+                        <MdRemoveRedEye />
+                      </Button>
+                      <Button
+                        className='opacity-50 hover:opacity-100'
+                        variant={'secondary'}
+                      >
+                        <IoMdTrash />
+                      </Button>
+                    </div>
+                  </TableCell>
                 </TableRow>
               ))
             ) : (
-              <TableRowsSkeleton col={6} row={10}></TableRowsSkeleton>
+              <TableRowsSkeleton col={8} row={10}></TableRowsSkeleton>
             )}
           </TableBody>
         </Table>

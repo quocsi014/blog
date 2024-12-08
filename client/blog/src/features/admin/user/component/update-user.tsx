@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { User } from '@/types/user';
+import { Fragment, useEffect, useRef} from 'react';
 import {
   Dialog,
   DialogContent,
   DialogOverlay,
   DialogPortal,
-  DialogTrigger,
 } from '@radix-ui/react-dialog';
 import { Button } from '@/components/ui/button';
 import {
@@ -25,11 +25,8 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/spiner';
-import { UseCreateUser } from '@/features/admin/user/apis/create-user';
-import { toast } from '@/hooks/use-toast';
-import { toastContents } from '@/enums/toast-contents';
 
-import { Role } from '@/enums/roles';
+import { Role, roleMap } from '@/enums/roles';
 import { Select } from '@radix-ui/react-select';
 import {
   SelectContent,
@@ -37,97 +34,141 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  updateUserFormSchema,
+  useUpdateUser,
+} from '@/features/admin/user/apis/update-user';
+import { Avatar } from '@/components/avatar';
+import { MdChangeCircle } from 'react-icons/md';
 import { useQueryClient } from '@tanstack/react-query';
 import { useQueryString } from '@/hooks/useQueryString';
-import { ERR_DATAS, ErrorData } from '@/enums/error-data';
-
+import { toast } from '@/hooks/use-toast';
+import { toastContents } from '@/enums/toast-contents';
+import { UseUpdateUserAvatar } from '@/features/admin/user/apis/update-user-avatar';
+import default_avatar from '@/asset/images/default_avatar.png'
+type UpdateUserFormProps = {
+  user: User | null;
+  onClose: () => void;
+};
 const roles = Object.values(Role).map((value) => ({
   value,
   label: value.charAt(0).toUpperCase() + value.slice(1).toLowerCase(), // Tùy chỉnh label nếu cần
 }));
-
-const formSchema = z.object({
-  first_name: z.string().min(1),
-  last_name: z.string().min(1),
-  email: z.string().email({ message: 'this field must be an email' }),
-  role: z.enum(Object.values(Role) as [Role, ...Role[]]),
-  password: z.string().min(6, {
-    message: 'password must have al least 6 characters',
-  }),
-  confirm: z.string().min(6, {
-    message: 'password must have al least 6 characters',
-  }),
-});
-
-export const CreateUser = () => {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+export const UpdateUserForm = ({ user, onClose }: UpdateUserFormProps) => {
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+  const form = useForm<z.infer<typeof updateUserFormSchema>>({
+    resolver: zodResolver(updateUserFormSchema),
     defaultValues: {
-      first_name: '',
-      last_name: '',
-      email: '',
-      role: Role.Writer,
-      password: '',
-      confirm: '',
+      first_name: user?.first_name,
+      last_name: user?.last_name,
+      email: user?.email,
+      role: roleMap[user ? user.role : 'Writter'],
     },
   });
+  useEffect(() => {
+    if (user) {
+      form.reset({
+        first_name: user.first_name,
+        last_name: user.last_name,
+        email: user.email,
+        role: roleMap[user.role],
+      });
+    }
+  }, [user, form]);
   const query = useQueryClient();
   const queryString = useQueryString();
   const page = Number.parseInt(queryString['page']) || 1;
   const limit = Number.parseInt(localStorage.getItem('rows') || '10');
-  const { isPending, mutate } = UseCreateUser({
+  const updateAvatarMutation = UseUpdateUserAvatar({
     mutationConfig: {
       onSuccess: () => {
         toast(toastContents.general.success);
-        setIsOpen(false);
+        query.invalidateQueries({
+          queryKey: ['users', { page, limit }],
+        });
+      },
+    },
+  });
+  const { isPending, mutate } = useUpdateUser({
+    mutationConfig: {
+      onSuccess: () => {
+        toast(toastContents.general.success);
+        onClose();
         query.invalidateQueries({
           queryKey: ['users', { page, limit }],
         });
         form.reset();
       },
-      onError: (error: ErrorData) => {
-        console.log(error)
-        if(error.statusCode == 500){
-          toast(toastContents.general.success);
-          setIsOpen(false);
-          form.reset();
-        }else{
-          switch (error.ERR_CODE) {
-            case ERR_DATAS.users.create_user.email_exist.ERR_CODE:
-              form.setError('email', {
-                type: 'munual',
-                message: ERR_DATAS.users.create_user.email_exist.message,
-              });
-          }
-        }
+      onError: (error) => {
+        console.log(error);
       },
     },
   });
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    const { confirm, ...data } = values;
-    if (confirm != data.password) {
-      form.setError('confirm', {
-        message: 'confirm password is not match',
-      });
+  const onSubmit = (values: z.infer<typeof updateUserFormSchema>) => {
+    mutate({ id: user?.id, data: values });
+  };
+  const updateUserAvatar = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = event.target.files?.[0];
+    if (!selectedFile) {
+      console.error('No file selected');
+      return;
     }
-    mutate(data);
-  }
+    const formData = new FormData();
+    formData.append('file', selectedFile);
+    updateAvatarMutation.mutate({ id: user?.id, data: formData });
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button variant='outline'>Create user</Button>
-      </DialogTrigger>
+    <Dialog
+      open={user != null}
+      onOpenChange={() => {
+        onClose();
+      }}
+    >
       <DialogPortal>
         <DialogOverlay className='fixed z-50 inset-0 bg-gray-500 opacity-30 backdrop-blur-lg' />
         <DialogContent className='fixed z-50 w-[450px] top-32 left-1/2 -translate-x-1/2 p-10 rounded-xl bg-white'>
-          <DialogHeader className='mb-4'>
-            <DialogTitle>Create User</DialogTitle>
+          <DialogHeader className='mb-8'>
+            <DialogTitle>Update user</DialogTitle>
             <DialogDescription>
-              Fill in the details below to create a new user.
+              Fill in the details below to update the user.
             </DialogDescription>
           </DialogHeader>
           <div>
+            {user ? (
+              <div className='w-full flex justify-center relative'>
+                <Avatar
+                  className='size-52 mb-4 border-4'
+                  lastName={user.last_name}
+                  firstName={user.first_name}
+                  avatarUrl={user.avatar? user.avatar.url : default_avatar}
+                ></Avatar>
+                {updateAvatarMutation.isPending ? (
+                  <div className='rounded-full size-52 bg-gray-400 absolute top-0 left-1/2 -translate-x-1/2 opacity-50 flex items-center justify-center'>
+                    <Spinner></Spinner>
+                  </div>
+                ) : (
+                  <Fragment></Fragment>
+                )}
+                <button
+                  className='absolute bottom-0 rounded-full bg-gray-100 text-gray-300 hover:text-gray-400'
+                  onClick={() => {
+                    avatarInputRef.current?.click();
+                  }}
+                >
+                  <MdChangeCircle size={32} />
+                </button>
+                <input
+                  type='file'
+                  ref={avatarInputRef}
+                  accept='image/*'
+                  onChange={updateUserAvatar}
+                  hidden
+                />
+              </div>
+            ) : (
+              <Fragment></Fragment>
+            )}
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
@@ -201,41 +242,6 @@ export const CreateUser = () => {
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={form.control}
-                  name='password'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Password</FormLabel>
-                      <FormControl>
-                        <Input
-                          type='password'
-                          placeholder='your password'
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage className='font-normal' />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name='confirm'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Confirm</FormLabel>
-                      <FormControl>
-                        <Input
-                          type='password'
-                          placeholder='confirm password'
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage className='font-normal' />
-                    </FormItem>
-                  )}
-                />
-
                 {isPending ? (
                   <Button
                     className='w-full font-bold text-md'
@@ -246,7 +252,7 @@ export const CreateUser = () => {
                   </Button>
                 ) : (
                   <Button className='w-full font-bold text-md' type='submit'>
-                    create
+                    update
                   </Button>
                 )}
               </form>
