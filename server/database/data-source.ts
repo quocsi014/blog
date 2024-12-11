@@ -11,5 +11,6 @@ export const dataSourceOption: DataSourceOptions = {
   migrations: ['dist/database/migrations/*.js'],
   synchronize: false,
 };
+console.log({ pass: process.env.DB_PASSWORD });
 const dataSource = new DataSource(dataSourceOption);
 export default dataSource;

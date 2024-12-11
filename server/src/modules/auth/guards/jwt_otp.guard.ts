@@ -10,6 +10,7 @@ export class JwtOtpGuard extends AuthGuard('jwt_otp_token') {
   }
 
   handleRequest(err: any, user: any) {
+    console.log('errorGuard', err);
     if (err || !user) {
       throw new CustomizedHttpException(
         ERR_DATAS.auth.register.email_verification_invalid,

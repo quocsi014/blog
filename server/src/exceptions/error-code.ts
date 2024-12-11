@@ -24,12 +24,4 @@ export const ERR_DATAS = {
       },
     },
   },
-  users: {
-    create_user: {
-      email_exist: {
-        message: 'Email already exists',
-        ERR_CODE: 'EMAIL_EXIST_ERR',
-      },
-    },
-  },
 };

@@ -28,7 +28,6 @@ import { RolesGuard } from '../auth/guards/role.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerOptions } from 'src/config/multer.config';
 import { unlink } from 'fs';
-import { plainToInstance } from 'class-transformer';
 
 @Controller('users')
 export class UserController {
@@ -42,8 +41,14 @@ export class UserController {
   }
 
   @Put('me')
+  async updateMe(@Body() user: UpdateUserDTO, @Request() req): Promise<void> {
+    user.role = null;
+    await this.userService.updateUser(req.user.sub, user);
+  }
+
+  @Put('me/avatar')
   @UseInterceptors(FileInterceptor('file', multerOptions))
-  async updateMe(
+  async updateAvatar(
     @UploadedFile(
       new ParseFilePipe({
         validators: [
@@ -53,25 +58,16 @@ export class UserController {
       }),
     )
     file: Express.Multer.File,
-    @Body('user') userData,
     @Request() req,
-  ): Promise<void> {
-    const user = plainToInstance(UpdateUserDTO, JSON.parse(userData), {
-      strategy: 'excludeAll', // Nếu muốn bỏ qua các field không nằm trong DTO
-      excludeExtraneousValues: true, // Chỉ lấy các field được khai báo trong DTO
-      enableImplicitConversion: true, // Tự động chuyển đổi kiểu
-    });
-    user.role = null;
-    await Promise.all([
-      this.userService.uploadAvatar(req.user.id, file),
-      this.userService.updateUser(req.user.id, user),
-    ]);
+  ) {
+    await this.userService.uploadAvatar(req.user.sub, file);
     unlink(file.path, (error) => {
       if (error) {
         console.error('Error deleting file:', error);
       }
     });
   }
+
   //Admin
   @Roles(Role.Admin)
   @UseGuards(RolesGuard)

@@ -43,6 +43,7 @@ export class CategoryService {
       (count % pagingRes.limit > 0 ? 1 : 0);
 
     const offset = (pagingRes.page - 1) * pagingRes.limit;
+    console.log(pagingRes);
     const categories = await this.categoryReposiroty.find({
       skip: offset,
       take: pagingRes.limit,

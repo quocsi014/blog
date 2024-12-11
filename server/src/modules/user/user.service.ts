@@ -1,6 +1,6 @@
 import {
+  ConflictException,
   HttpException,
-  HttpStatus,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -17,8 +17,6 @@ import { PagingResponse } from 'src/dto/paging.dto';
 import { MailService } from 'src/modules/mail/mail.service';
 import { CloudinaryService } from 'src/modules/cloudinary/cloudinary.service';
 import { Image } from 'src/entity/image.entity';
-import { CustomizedHttpException } from 'src/exceptions/http-exception.exception';
-import { ERR_DATAS } from 'src/exceptions/error-code';
 
 @Injectable()
 export class UserService {
@@ -46,10 +44,7 @@ export class UserService {
       email: userDTO.email,
     });
     if (user) {
-      throw new CustomizedHttpException(
-        ERR_DATAS.users.create_user.email_exist,
-        HttpStatus.CONFLICT,
-      );
+      throw new ConflictException();
     }
     this.userRepository.save(userDTO);
   }

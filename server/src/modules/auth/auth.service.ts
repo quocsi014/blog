@@ -39,6 +39,7 @@ export class AuthService {
       email: registerUserDto.email,
     });
     if (user) {
+      console.log(user);
       throw new ConflictException();
     }
     const hashedPassword = await this.hashPassword(registerUserDto.password);
@@ -118,6 +119,7 @@ export class AuthService {
       throw incorrectInoException;
     }
 
+    console.log({ name: process.env.DB_USERNAME });
     const checkPass = await bcrypt.compare(password, user.password);
     if (!checkPass) {
       throw incorrectInoException;
@@ -212,6 +214,7 @@ export class AuthService {
     const otpTokenExp = this.configService.get<string>(
       'jwt.expiration.otpToken',
     );
+    console.log(otpTokenSK);
     const otpToken = await this.jwtService.signAsync(
       { email: email },
       {
