@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { Category } from './entity/category.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CategoryDto } from './dto/category.dto';
+import { CategoryDto, SortCategoryFields } from './dto/category.dto';
 import { PagingResponse } from 'src/dto/paging.dto';
 
 @Injectable()
@@ -36,17 +36,30 @@ export class CategoryService {
   async getAllCategories(
     pagingRes: PagingResponse<Category>,
   ): Promise<PagingResponse<Category>> {
-    const count = await this.categoryReposiroty.count();
+    const whereCondition: any = pagingRes.query
+      ? SortCategoryFields.map((field) => ({
+          [field]: Like(`%${pagingRes.query}%`),
+        }))
+      : undefined;
+    const count = await this.categoryReposiroty.count({
+      where: whereCondition,
+    });
 
     const totalPage =
       Math.floor(count / pagingRes.limit) +
       (count % pagingRes.limit > 0 ? 1 : 0);
 
     const offset = (pagingRes.page - 1) * pagingRes.limit;
-    console.log(pagingRes);
+    const order: any = {};
+    if (pagingRes.sortBy) {
+      order[pagingRes.sortBy] = pagingRes.ascending ? 'ASC' : 'DESC';
+      console.log(pagingRes.sortBy);
+    }
     const categories = await this.categoryReposiroty.find({
       skip: offset,
       take: pagingRes.limit,
+      where: whereCondition,
+      order: order,
     });
     pagingRes.totalPage = totalPage;
     pagingRes.items = categories;

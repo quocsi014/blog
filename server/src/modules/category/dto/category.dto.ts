@@ -4,3 +4,4 @@ export class CategoryDto {
   @IsNotEmpty()
   name: string;
 }
+export const SortCategoryFields = ['name'];

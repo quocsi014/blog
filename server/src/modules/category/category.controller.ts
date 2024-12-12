@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { Roles } from 'src/decorators/roles.decorator';
-import { CategoryDto } from './dto/category.dto';
+import { CategoryDto, SortCategoryFields } from './dto/category.dto';
 import { Category } from './entity/category.entity';
 import { Role } from 'src/enum/role.enum';
 import { Public } from 'src/decorators/public.decorator';
@@ -45,9 +45,17 @@ export class CategoryController {
   async getAll(
     @Query('page') page: number,
     @Query('limit') limit: number,
+    @Query('query') query: string,
+    @Query('sort_by') sortBy: string,
+    @Query('asc') ascending: boolean,
   ): Promise<PagingResponse<Category>> {
     const pagingRes = new PagingResponse<Category>(limit, page);
     pagingRes.process();
+    pagingRes.ascending = ascending;
+    if (SortCategoryFields.includes(sortBy)) {
+      pagingRes.sortBy = sortBy;
+    }
+    pagingRes.query = query;
     return await this.categoryService.getAllCategories(pagingRes);
   }
 }
