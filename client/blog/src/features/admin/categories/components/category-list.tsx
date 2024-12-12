@@ -22,10 +22,11 @@ import { UpdateUserForm } from '@/features/admin/user/component/update-user';
 import { Input } from '@/components/ui/input';
 import { SortButton } from '@/components/ui/sort-button';
 import { useCategories } from '../apis/list-category';
-import { useRef, useState } from 'react';
+import { ChangeEvent, useRef, useState } from 'react';
 import useUpdateSearchParam from '@/hooks/use-update-query';
 import { useQueryString } from '@/hooks/useQueryString';
 import { Category } from '@/types/category';
+import { useDebounce } from '@/hooks/use-debounce';
 export const CategoryList = () => {
   const [search, setSearch] = useState<string>('');
   const [sortBy, setSortBy] = useState<string | null>(null);
@@ -41,11 +42,30 @@ export const CategoryList = () => {
     sortBy: sortBy,
     asc: asc,
   });
+
+  const searchDebounce = useDebounce((search: string) => {
+    updateSearchParam('page');
+    searchRef.current = search;
+  }, 500);
+  const onSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const newSearch = event.target.value;
+    setSearch(newSearch);
+    searchDebounce(newSearch);
+  };
   return (
     <div className='overflow-hidden'>
       <div className='py-4 flex justify-between'>
         <div className='flex space-x-4'>
           <SelectRow />
+          <Input
+            ref={searchInputRef}
+            value={search}
+            onChange={(e) => {
+              onSearchChange(e);
+            }}
+            className='w-72 focus-visible:ring-transparent border-0'
+            placeholder='Search by name (Ctr + K)'
+          ></Input>
         </div>
         {/* <Button className='bg-gray-500 hover:bg-gray-600 text-white text-lg'>
           Create user
