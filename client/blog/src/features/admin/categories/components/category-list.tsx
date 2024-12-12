@@ -87,7 +87,7 @@ export const CategoryList = () => {
               <TableHead className=' space-x-2 font-bold text-black'>
                 <span>Name</span>
                 <SortButton
-                  sortField='firstName'
+                  sortField='name'
                   sortBy={sortBy}
                   setSortBy={setSortBy}
                   asc={asc}
