@@ -94,6 +94,16 @@ export const CategoryList = () => {
                   setAsc={setAsc}
                 ></SortButton>
               </TableHead>
+              <TableHead className='w-[200px] space-x-2 font-bold text-black'>
+                <span>Created at</span>
+                <SortButton
+                  sortField='createdAt'
+                  sortBy={sortBy}
+                  setSortBy={setSortBy}
+                  asc={asc}
+                  setAsc={setAsc}
+                ></SortButton>
+              </TableHead>
               <TableHead className='w-[200px] font-bold text-black'>
                 Action
               </TableHead>
@@ -108,6 +118,9 @@ export const CategoryList = () => {
                   </TableCell>
                   <TableCell className='text-md font-medium text-gray-700'>
                     {category.name}
+                  </TableCell>
+                  <TableCell className='text-md font-medium text-gray-700'>
+                    {formatDate(category.created_at)}
                   </TableCell>
                   <TableCell>
                     <div className='space-x-1'>
