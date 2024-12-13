@@ -141,7 +141,7 @@ export const CategoryList = () => {
                 </TableRow>
               ))
             ) : (
-              <TableRowsSkeleton col={3} row={10}></TableRowsSkeleton>
+              <TableRowsSkeleton col={4} row={10}></TableRowsSkeleton>
             )}
           </TableBody>
         </Table>
