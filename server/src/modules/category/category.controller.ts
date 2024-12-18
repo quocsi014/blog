@@ -29,7 +29,7 @@ export class CategoryController {
   @Roles(Role.Admin)
   async update(
     @Body() categoryDto: CategoryDto,
-    @Param() id: number,
+    @Param("id") id: number,
   ): Promise<void> {
     await this.categoryService.updateCategory(id, categoryDto);
   }
