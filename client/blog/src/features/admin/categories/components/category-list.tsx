@@ -24,6 +24,7 @@ import { useQueryString } from '@/hooks/useQueryString';
 import { Category } from '@/types/category';
 import { useDebounce } from '@/hooks/use-debounce';
 import { CreateCategory } from './create-category';
+import { CategoryUpdateForm } from './update-category';
 export const CategoryList = () => {
   const [search, setSearch] = useState<string>('');
   const [sortBy, setSortBy] = useState<string | null>(null);
@@ -39,7 +40,10 @@ export const CategoryList = () => {
     sortBy: sortBy,
     asc: asc,
   });
-
+  const [categoryUpdate, setCategoryUpdate] = useState<Category | null>(null);
+  const onCloseUpdateForm = () => {
+    setCategoryUpdate(null);
+  };
   const searchDebounce = useDebounce((search: string) => {
     updateSearchParam('page');
     searchRef.current = search;
@@ -65,6 +69,7 @@ export const CategoryList = () => {
           ></Input>
         </div>
         <CreateCategory></CreateCategory>
+       <CategoryUpdateForm onClose={onCloseUpdateForm} category={categoryUpdate} ></CategoryUpdateForm> 
         {/* <Button className='bg-gray-500 hover:bg-gray-600 text-white text-lg'>
           Create user
         </Button> */}
@@ -124,7 +129,9 @@ export const CategoryList = () => {
                     <div className='space-x-1'>
                       <Button
                         className='bg-blue-400 hover:bg-blue-500'
-                        onClick={() => {}}
+                        onClick={() => {
+                          setCategoryUpdate(category)
+                        }}
                       >
                         <MdRemoveRedEye />
                       </Button>
