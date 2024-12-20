@@ -30,7 +30,7 @@ export class CategoryService {
     if (!category) {
       throw new NotFoundException('No Categories Found');
     }
-    await this.categoryReposiroty.delete(category);
+    await this.categoryReposiroty.delete(category.id);
   }
 
   async getAllCategories(
