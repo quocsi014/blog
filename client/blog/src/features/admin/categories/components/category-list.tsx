@@ -25,6 +25,7 @@ import { Category } from '@/types/category';
 import { useDebounce } from '@/hooks/use-debounce';
 import { CreateCategory } from './create-category';
 import { CategoryUpdateForm } from './update-category';
+import { DeleteCategoryForm } from './delete-category';
 export const CategoryList = () => {
   const [search, setSearch] = useState<string>('');
   const [sortBy, setSortBy] = useState<string | null>(null);
@@ -44,6 +45,7 @@ export const CategoryList = () => {
   const onCloseUpdateForm = () => {
     setCategoryUpdate(null);
   };
+  const [categoryDelete, setCategoryDelete] = useState<number | null | undefined>(null);
   const searchDebounce = useDebounce((search: string) => {
     updateSearchParam('page');
     searchRef.current = search;
@@ -70,6 +72,7 @@ export const CategoryList = () => {
         </div>
         <CreateCategory></CreateCategory>
        <CategoryUpdateForm onClose={onCloseUpdateForm} category={categoryUpdate} ></CategoryUpdateForm> 
+        <DeleteCategoryForm id={categoryDelete} setId={setCategoryDelete} ></DeleteCategoryForm>
         {/* <Button className='bg-gray-500 hover:bg-gray-600 text-white text-lg'>
           Create user
         </Button> */}
@@ -138,6 +141,7 @@ export const CategoryList = () => {
                       <Button
                         className='opacity-50 hover:opacity-100'
                         variant={'secondary'}
+                        onClick={()=>{setCategoryDelete(category.id)}}
                       >
                         <IoMdTrash />
                       </Button>
