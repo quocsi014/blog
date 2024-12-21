@@ -26,6 +26,7 @@ import { Input } from '@/components/ui/input';
 import { useDebounce } from '@/hooks/use-debounce';
 import useUpdateSearchParam from '@/hooks/use-update-query';
 import { SortButton } from '@/components/ui/sort-button';
+import { DeleteUserForm } from './delete-user';
 export const UserList = () => {
   const [search, setSearch] = useState<string>('');
   const [sortBy, setSortBy] = useState<string | null>(null);
@@ -52,7 +53,7 @@ export const UserList = () => {
     const user = data.data.items.find((u: User) => u.id == userUpdate.id);
     setUserUpdate(user);
   }, [data, userUpdate]);
-
+  const [userDelete, setUserDelete] = useState<number | null | undefined>(null)
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.ctrlKey && event.key === 'k') {
@@ -103,6 +104,7 @@ export const UserList = () => {
           user={userUpdate}
           onClose={onCloseUpdateForm}
         ></UpdateUserForm>
+       <DeleteUserForm id={userDelete} setId={setUserDelete}></DeleteUserForm> 
       </div>
       <ScrollArea className='h-[600px] rounded-xl overflow-auto'>
         <ScrollAreaViewport>
@@ -210,6 +212,9 @@ export const UserList = () => {
                       <Button
                         className='opacity-50 hover:opacity-100'
                         variant={'secondary'}
+                        onClick={
+                          () => setUserDelete(user.id)
+                        }
                       >
                         <IoMdTrash />
                       </Button>
