@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   FileTypeValidator,
   Get,
   MaxFileSizeValidator,
@@ -29,14 +30,17 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { multerOptions } from 'src/config/multer.config';
 import { unlink } from 'fs';
 import { plainToInstance } from 'class-transformer';
+interface AuthenticatedRequest extends Request {
+  user?: { id: number };
+}
 
 @Controller('users')
 export class UserController {
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService) { }
 
   //Me
   @Get('/me')
-  getMe(@Request() req): Promise<SafeUser> {
+  getMe(@Request() req: AuthenticatedRequest): Promise<SafeUser> {
     const userId = req.user.id;
     return this.userService.getUser(userId);
   }
@@ -72,6 +76,7 @@ export class UserController {
       }
     });
   }
+
   //Admin
   @Roles(Role.Admin)
   @UseGuards(RolesGuard)
@@ -132,5 +137,12 @@ export class UserController {
           console.error('Error deleting file:', error);
         }
       });
+  }
+
+  @Roles(Role.Admin)
+  @UseGuards(RolesGuard)
+  @Delete('/:id')
+  async deleteUser(@Param('id') id: number): Promise<void> {
+    await this.userService.deleteUser(id);
   }
 }

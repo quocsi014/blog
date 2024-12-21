@@ -30,7 +30,7 @@ export class UserService {
     @InjectRepository(Image) private imageRepository: Repository<Image>,
     private mailService: MailService,
     private readonly cloudinaryService: CloudinaryService,
-  ) {}
+  ) { }
   async getUser(userId: number): Promise<SafeUser> {
     const user = await this.userRepository.findOneBy({
       id: userId,
@@ -58,9 +58,9 @@ export class UserService {
     const user = await this.userRepository.findOneBy({ id: userId });
     const avatar = await this.cloudinaryService.uploadImage(file);
     const createdAvatar: Image = this.imageRepository.create(avatar);
-    // if (user.avatar) {
-    //   this.cloudinaryService.deleteImage(user.avatar.key);
-    // }
+    if (user.avatar) {
+      this.cloudinaryService.deleteImage(user.avatar.key);
+    }
     user.avatar = createdAvatar;
     await this.userRepository.save(user);
   }
@@ -83,8 +83,8 @@ export class UserService {
   ): Promise<PagingResponse<UserDTO>> {
     const whereCondition: any = pagignRes.query
       ? SortUserFields.map((field) => ({
-          [field]: Like(`%${pagignRes.query}%`),
-        }))
+        [field]: Like(`%${pagignRes.query}%`),
+      }))
       : undefined;
     const count = await this.userRepository.count({
       where: whereCondition,
@@ -108,5 +108,12 @@ export class UserService {
     pagignRes.totalPage = totalPage;
     pagignRes.items = users;
     return pagignRes;
+  }
+  async deleteUser(id: number): Promise<void> {
+    const user = this.userRepository.findOneBy({ id: id });
+    if (!user) {
+      throw new NotFoundException('No Users Found');
+    }
+    await this.userRepository.delete(id);
   }
 }
