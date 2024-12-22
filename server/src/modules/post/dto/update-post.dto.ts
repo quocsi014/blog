@@ -6,8 +6,6 @@ export class UpdatePostDto {
   @Expose({ name: 'thumbnail_url' })
   thumbnailUrl: string;
 
-  content: string;
-
   @Expose({ name: 'category_ids' })
   categoryIds: number[];
 }

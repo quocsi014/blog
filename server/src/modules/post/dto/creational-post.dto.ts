@@ -8,9 +8,6 @@ export class CreationalPostDto {
   @Expose({ name: 'thumbnail_url' })
   thumbnailUrl: string;
 
-  @IsNotEmpty()
-  content: string;
-
   @Expose({ name: 'category_ids' })
   categoryIds: number[];
 

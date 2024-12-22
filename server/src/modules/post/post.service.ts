@@ -55,7 +55,6 @@ export class PostService {
     }
 
     post.title = postDto.title || post.title;
-    post.content = postDto.content || post.content;
     post.thumbnailUrl = postDto.thumbnailUrl || post.thumbnailUrl;
 
     await this.postRepository.save(post);

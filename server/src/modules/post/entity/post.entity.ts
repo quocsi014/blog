@@ -25,9 +25,6 @@ export class Post {
   @Column({ name: 'thumbnail_url', nullable: true })
   thumbnailUrl: string;
 
-  @Column({ name: 'content', type: 'text', nullable: true })
-  content: string;
-
   @ManyToMany(() => Category, (category) => category.posts, { lazy: true })
   categories: Category[];
 
