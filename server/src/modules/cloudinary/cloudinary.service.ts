@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { v2 as cloudinary } from 'cloudinary';
-import { ImageDTO } from 'src/dto/image.dto';
+import { ImageDTO } from 'src/modules/image/dto/image.dto';
 @Injectable()
 export class CloudinaryService {
   constructor(private configService: ConfigService) {

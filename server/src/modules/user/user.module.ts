@@ -5,7 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { MailModule } from '../mail/mail.module';
 import { CloudinaryModule } from 'src/modules/cloudinary/cloudinary.module';
-import { Image } from 'src/entity/image.entity';
+import { Image } from '../image/entity/image.entity';
 @Module({
   imports: [
     TypeOrmModule.forFeature([User, Image]),

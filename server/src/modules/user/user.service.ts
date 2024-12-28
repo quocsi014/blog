@@ -16,9 +16,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { PagingResponse } from 'src/dto/paging.dto';
 import { MailService } from 'src/modules/mail/mail.service';
 import { CloudinaryService } from 'src/modules/cloudinary/cloudinary.service';
-import { Image } from 'src/entity/image.entity';
 import { CustomizedHttpException } from 'src/exceptions/http-exception.exception';
 import { ERR_DATAS } from 'src/exceptions/error-code';
+import { Image } from '../image/entity/image.entity';
 
 @Injectable()
 export class UserService {

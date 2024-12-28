@@ -1,7 +1,7 @@
 import { Exclude, Expose } from 'class-transformer';
-import { Image } from 'src/entity/image.entity';
 import { Role } from 'src/enum/role.enum';
 import { Comment } from 'src/modules/comment/entity/comment.entity';
+import { Image } from 'src/modules/image/entity/image.entity';
 import { Post } from 'src/modules/post/entity/post.entity';
 import {
   Entity,

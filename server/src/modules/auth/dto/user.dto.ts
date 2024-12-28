@@ -1,6 +1,6 @@
 import { Expose } from 'class-transformer';
 import { IsEmail, IsEnum, IsNotEmpty, IsOptional } from 'class-validator';
-import { ImageDTO } from 'src/dto/image.dto';
+import { ImageDTO } from 'src/modules/image/dto/image.dto';
 import { Role } from 'src/enum/role.enum';
 import { Timestamp } from 'typeorm';
 

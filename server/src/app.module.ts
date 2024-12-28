@@ -18,6 +18,7 @@ import { CategoryModule } from './modules/category/category.module';
 import { CommentModule } from './modules/comment/comment.module';
 import { CloudinaryService } from './modules/cloudinary/cloudinary.service';
 import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
+import { ImageModule } from './modules/image/image.module';
 import mailConfig from './config/mail.config';
 import otpConfig from './config/otp.config';
 import cloudinaryConfig from './config/cloudinary.config';
@@ -43,6 +44,7 @@ import cloudinaryConfig from './config/cloudinary.config';
     CategoryModule,
     CommentModule,
     CloudinaryModule,
+    ImageModule,
   ],
   controllers: [AppController],
   providers: [
