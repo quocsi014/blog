@@ -7,6 +7,7 @@ import { CreationalPostDto } from './dto/creational-post.dto';
 import { User } from '../user/entities/user.entity';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PagingResponse } from 'src/dto/paging.dto';
+import { ImageService } from '../image/image.service';
 
 @Injectable()
 export class PostService {
@@ -15,6 +16,7 @@ export class PostService {
     @InjectRepository(Post) private postRepository: Repository<Post>,
     @InjectRepository(Category)
     private categoryRepository: Repository<Category>,
+    private imageService: ImageService,
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
   async createPost(postDto: CreationalPostDto): Promise<Post> {
@@ -55,10 +57,20 @@ export class PostService {
     }
 
     post.title = postDto.title || post.title;
-    post.thumbnailUrl = postDto.thumbnailUrl || post.thumbnailUrl;
 
     await this.postRepository.save(post);
   }
+
+  async uploadThumbnail(userId: number, file: Express.Multer.File): Promise<void> {
+    const post = await this.postRepository.findOneBy({ id: userId });
+    const thumbnail = await this.imageService.uploadImage(file, 'blod/avatar');
+    if (post.thumbnail) {
+      this.imageService.deleteImage(post.thumbnail.id);
+    }
+    post.thumbnail = thumbnail;
+    await this.postRepository.save(post);
+  }
+
 
   async deletePost(id: number): Promise<void> {
     const post = await this.postRepository.findOneBy({ id: id });

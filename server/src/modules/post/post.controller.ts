@@ -56,6 +56,9 @@ export class PostController {
     return this.postService.updatePost(id, postDto);
   }
 
+  @Put(':id/thumbnail')
+  async updateThumbnail(){}
+
   @Delete(':id')
   @Roles(Role.Admin, Role.Writer)
   @UseGuards(PostOwnershipGuard)

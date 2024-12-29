@@ -2,6 +2,7 @@ import { Expose } from 'class-transformer';
 import { BlogStatus } from 'src/enum/blog-status.role';
 import { Category } from 'src/modules/category/entity/category.entity';
 import { Comment } from 'src/modules/comment/entity/comment.entity';
+import { Image } from 'src/modules/image/entity/image.entity';
 import { User } from 'src/modules/user/entities/user.entity';
 import {
   Column,
@@ -11,6 +12,7 @@ import {
   ManyToMany,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   Timestamp,
 } from 'typeorm';
@@ -23,8 +25,9 @@ export class Post {
   @Column({ name: 'title', nullable: false })
   title: string;
 
-  @Column({ name: 'thumbnail_url', nullable: true })
-  thumbnailUrl: string;
+  @OneToOne(() => Image, { cascade: true, onDelete: 'CASCADE', eager: true })
+  @JoinColumn({ name: 'thumbnail_id' })
+  thumbnail: Image;
 
   @Column({ name: 'status', type: 'enum', enum: BlogStatus, default: BlogStatus.Draft})
   status: BlogStatus;
