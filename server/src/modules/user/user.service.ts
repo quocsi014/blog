@@ -19,6 +19,7 @@ import { CloudinaryService } from 'src/modules/cloudinary/cloudinary.service';
 import { CustomizedHttpException } from 'src/exceptions/http-exception.exception';
 import { ERR_DATAS } from 'src/exceptions/error-code';
 import { Image } from '../image/entity/image.entity';
+import { ImageService } from '../image/image.service';
 
 @Injectable()
 export class UserService {
@@ -28,8 +29,7 @@ export class UserService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
     @InjectRepository(Image) private imageRepository: Repository<Image>,
-    private mailService: MailService,
-    private readonly cloudinaryService: CloudinaryService,
+    private readonly imageService: ImageService,
   ) { }
   async getUser(userId: number): Promise<SafeUser> {
     const user = await this.userRepository.findOneBy({
@@ -56,10 +56,10 @@ export class UserService {
 
   async uploadAvatar(userId: number, file: Express.Multer.File): Promise<void> {
     const user = await this.userRepository.findOneBy({ id: userId });
-    const avatar = await this.cloudinaryService.uploadImage(file);
+    const avatar = await this.imageService.uploadImage(file, 'blod/avatar');
     const createdAvatar: Image = this.imageRepository.create(avatar);
     if (user.avatar) {
-      this.cloudinaryService.deleteImage(user.avatar.key);
+      this.imageService.deleteImage(user.avatar.id);
     }
     user.avatar = createdAvatar;
     await this.userRepository.save(user);
