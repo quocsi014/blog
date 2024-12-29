@@ -6,11 +6,12 @@ import { User } from './entities/user.entity';
 import { MailModule } from '../mail/mail.module';
 import { CloudinaryModule } from 'src/modules/cloudinary/cloudinary.module';
 import { Image } from '../image/entity/image.entity';
+import { ImageModule } from '../image/image.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([User, Image]),
     MailModule,
-    CloudinaryModule,
+    ImageModule,
   ],
   providers: [UserService],
   controllers: [UserController],

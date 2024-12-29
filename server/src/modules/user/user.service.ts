@@ -57,11 +57,10 @@ export class UserService {
   async uploadAvatar(userId: number, file: Express.Multer.File): Promise<void> {
     const user = await this.userRepository.findOneBy({ id: userId });
     const avatar = await this.imageService.uploadImage(file, 'blod/avatar');
-    const createdAvatar: Image = this.imageRepository.create(avatar);
     if (user.avatar) {
       this.imageService.deleteImage(user.avatar.id);
     }
-    user.avatar = createdAvatar;
+    user.avatar = avatar;
     await this.userRepository.save(user);
   }
 
