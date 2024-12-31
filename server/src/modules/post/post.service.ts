@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { In, Repository } from 'typeorm';
+import { In, Like, Repository } from 'typeorm';
 import { Category } from '../category/entity/category.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Post } from './entity/post.entity';
@@ -8,6 +8,7 @@ import { User } from '../user/entities/user.entity';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PagingResponse } from 'src/dto/paging.dto';
 import { ImageService } from '../image/image.service';
+import { SortPostFields } from './dto/post.dto';
 
 @Injectable()
 export class PostService {
@@ -103,16 +104,43 @@ export class PostService {
   }
 
   async getAll(pagingRes: PagingResponse<Post>): Promise<PagingResponse<Post>> {
-    const count = await this.postRepository.count();
-
+    // const count = await this.postRepository.count();
+    //
+    // const totalPage =
+    //   Math.floor(count / pagingRes.limit) +
+    //   (count % pagingRes.limit > 0 ? 1 : 0);
+    //
+    // const offset = (pagingRes.page - 1) * pagingRes.limit;
+    // const posts = await this.postRepository.find({
+    //   skip: offset,
+    //   take: pagingRes.limit,
+    // });
+    // pagingRes.totalPage = totalPage;
+    // pagingRes.items = posts;
+    // return pagingRes;
+    const whereCondition: any = pagingRes.query
+      ? SortPostFields.map((field) => ({
+        [field]: Like(`%${pagingRes.query}%`),
+      }))
+      : undefined;
+    const count = await this.postRepository.count({
+      where: whereCondition,
+    });
     const totalPage =
       Math.floor(count / pagingRes.limit) +
       (count % pagingRes.limit > 0 ? 1 : 0);
 
     const offset = (pagingRes.page - 1) * pagingRes.limit;
+    const order: any = {};
+    if (pagingRes.sortBy) {
+      order[pagingRes.sortBy] = pagingRes.ascending ? 'ASC' : 'DESC';
+      console.log(pagingRes.sortBy);
+    }
     const posts = await this.postRepository.find({
       skip: offset,
       take: pagingRes.limit,
+      where: whereCondition,
+      order: order,
     });
     pagingRes.totalPage = totalPage;
     pagingRes.items = posts;

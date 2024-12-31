@@ -19,6 +19,7 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { PostOwnershipGuard } from './guards/post_ownership.guard';
 import { Public } from 'src/decorators/public.decorator';
 import { PagingResponse } from 'src/dto/paging.dto';
+import { SortPostFields } from './dto/post.dto';
 @Controller('posts')
 export class PostController {
   constructor(private postService: PostService) {}
@@ -41,13 +42,26 @@ export class PostController {
 
   @Get()
   @Public()
-  async getAll(@Query('page') page: number, @Query('limit') limit: number) {
-    const pagingRes = new PagingResponse<PostEntity>(limit, page);
-    pagingRes.process();
-    return await this.postService.getAll(pagingRes);
+  @Roles(Role.Admin, Role.Writer)
+  async getAll(
+    @Query('page') page: number,
+    @Query('limit') limit: number,
+    @Query('query') query: string,
+    @Query('sort_by') sortBy: string,
+    @Query('asc') ascending: boolean,
+  ) {
+    const res = new PagingResponse<PostEntity>(limit, page);
+    res.process();
+    res.ascending = ascending;
+    if (SortPostFields.includes(sortBy)) {
+      res.sortBy = sortBy;
+    }
+    res.query = query;
+    return await this.postService.getAll(res);
   }
 
   @Put(':id')
+  @Roles(Role.Admin, Role.Writer)
   async update(
     @Request() req,
     @Body() postDto: UpdatePostDto,
@@ -57,7 +71,8 @@ export class PostController {
   }
 
   @Put(':id/thumbnail')
-  async updateThumbnail(){}
+  @Roles(Role.Admin, Role.Writer)
+  async updateThumbnail() {}
 
   @Delete(':id')
   @Roles(Role.Admin, Role.Writer)

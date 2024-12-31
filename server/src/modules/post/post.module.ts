@@ -13,5 +13,4 @@ import { ImageModule } from '../image/image.module';
   providers: [PostService],
   controllers: [PostController],
   exports: [PostService],
-})
-export class PostModule {}
+})export class PostModule {}
