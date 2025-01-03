@@ -8,7 +8,7 @@ import { User } from '../user/entities/user.entity';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PagingResponse } from 'src/dto/paging.dto';
 import { ImageService } from '../image/image.service';
-import { SortPostFields } from './dto/post.dto';
+import { QueryPostFields, SortPostFields } from './dto/post.dto';
 
 @Injectable()
 export class PostService {
@@ -119,7 +119,7 @@ export class PostService {
     // pagingRes.items = posts;
     // return pagingRes;
     const whereCondition: any = pagingRes.query
-      ? SortPostFields.map((field) => ({
+      ? QueryPostFields.map((field) => ({
         [field]: Like(`%${pagingRes.query}%`),
       }))
       : undefined;
@@ -134,7 +134,6 @@ export class PostService {
     const order: any = {};
     if (pagingRes.sortBy) {
       order[pagingRes.sortBy] = pagingRes.ascending ? 'ASC' : 'DESC';
-      console.log(pagingRes.sortBy);
     }
     const posts = await this.postRepository.find({
       skip: offset,

@@ -21,3 +21,5 @@ export class PostDto {
 }
 
 export const SortPostFields = ['id', 'title', 'createdAt'];
+
+export const QueryPostFields = ['id', 'title', 'status'];
